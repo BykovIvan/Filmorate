@@ -17,6 +17,8 @@ import java.util.Map;
 @RequestMapping("/films")
 public class FilmController {
     private final Map<Integer, Film> mapFilms = new HashMap<>();
+    private final int maxLength = 200;
+    private final LocalDate startFilmDate = LocalDate.of(1895, 12, 28);
 
     @PostMapping
     public Film create(@RequestBody Film film){
@@ -45,13 +47,13 @@ public class FilmController {
         if  (film.getName() == null || film.getName().isBlank()){
             throw new ValidationException("Название не может быть пустым");
         }
-        if (film.getDescription().length() > 200){
+        if (film.getDescription().length() > maxLength || film.getDescription().isBlank()){
             throw new ValidationException("Максимальная длина описания — 200 символов");
         }
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))){
+        if (film.getReleaseDate().isBefore(startFilmDate)){
             throw new ValidationException("Дата релиза должна быть не раньше 28 декабря 1895 года");
         }
-        if (film.getDuration() <= 0){
+        if (film.getDuration().toMinutes() <= 0){
             throw new ValidationException("Продолжительность фильма должна быть положительной");
         }
     }
