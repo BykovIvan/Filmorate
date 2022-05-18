@@ -16,24 +16,25 @@ import java.util.Map;
 @Slf4j
 @RequestMapping("/users")
 public class UserController {
-    private final Map<Integer, User> mapUsers = new HashMap<>();
+    private final Map<String, User> mapUsers = new HashMap<>();
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
         log.info("Получен запрос к эндпоинту /users. Метод POST");
         checkUser(user);
-        if (mapUsers.containsKey(user.getId())) {
-            return null;
+        if (mapUsers.containsKey(user.getLogin())) {
+            throw new ValidationException("Такой пользователь уже зарегестрирован");
         }
-        mapUsers.put(user.getId(), user);
+        mapUsers.put(user.getLogin(), user);
         return user;
+
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
         log.info("Получен запрос к эндпоинту /users. Метод PUT");
         checkUser(user);
-        mapUsers.put(user.getId(), user);
+        mapUsers.put(user.getLogin(), user);
         return user;
     }
 
