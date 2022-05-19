@@ -31,8 +31,8 @@ public class ValidationFilmsControllerTest {
     @Test
     public void createFilmResponseOKTest() throws Exception {
         film = Film.builder()
-                .id(0)
-                .name("Hooror 1")
+                .id(10)
+                .name("Hooror 14")
                 .description("This is Horor")
                 .releaseDate(LocalDate.of(2010, 12, 23))
                 .duration(Duration.ofMinutes(120))
@@ -112,7 +112,7 @@ public class ValidationFilmsControllerTest {
                 .build();
         String body = mapper.writeValueAsString(film);
         mockMvc.perform(post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     @Test
@@ -126,7 +126,7 @@ public class ValidationFilmsControllerTest {
                 .build();
         String body = mapper.writeValueAsString(film);
         mockMvc.perform(post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     @Test
@@ -140,7 +140,7 @@ public class ValidationFilmsControllerTest {
                 .build();
         String body = mapper.writeValueAsString(film);
         mockMvc.perform(post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
 }

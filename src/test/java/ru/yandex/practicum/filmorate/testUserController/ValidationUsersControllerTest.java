@@ -113,10 +113,10 @@ public class ValidationUsersControllerTest {
     @Test
     public void createUserDateOfBirthIsNowTest() throws Exception {
         user = User.builder()
-                .id(0)
-                .email("bukov123@yadenx.ru")
-                .login("Homayak")
-                .name("Ivan")
+                .id(10)
+                .email("bukov125@yadenx.ru")
+                .login("Homayak2")
+                .name("Ivan4")
                 .birthday(LocalDate.now())
                 .build();
         String body = mapper.writeValueAsString(user);
@@ -135,6 +135,6 @@ public class ValidationUsersControllerTest {
                 .build();
         String body = mapper.writeValueAsString(user);
         mockMvc.perform(post("/users").content(body).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 }
