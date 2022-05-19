@@ -9,7 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.time.Duration;
 import java.time.LocalDate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -35,7 +34,7 @@ public class ValidationFilmsControllerTest {
                 .name("Hooror 14")
                 .description("This is Horor")
                 .releaseDate(LocalDate.of(2010, 12, 23))
-                .duration(Duration.ofMinutes(120))
+                .duration(120)
                 .build();
         String body = mapper.writeValueAsString(film);
         mockMvc.perform(post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
@@ -49,7 +48,7 @@ public class ValidationFilmsControllerTest {
                 .name("")
                 .description("This is Horor")
                 .releaseDate(LocalDate.of(2010, 12, 23))
-                .duration(Duration.ofMinutes(120))
+                .duration(123)
                 .build();
         String body = mapper.writeValueAsString(film);
         mockMvc.perform(post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
@@ -63,7 +62,7 @@ public class ValidationFilmsControllerTest {
                 .name("  ")
                 .description("This is Horor")
                 .releaseDate(LocalDate.of(2010, 12, 23))
-                .duration(Duration.ofMinutes(120))
+                .duration(23)
                 .build();
         String body = mapper.writeValueAsString(film);
         mockMvc.perform(post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
@@ -80,7 +79,7 @@ public class ValidationFilmsControllerTest {
                         " This is Hororv This is Horor This is Horor This is Horor This is Horor This is Horor" +
                         " This is Horor This is Horor This is Horor This is Horor This is Horor")
                 .releaseDate(LocalDate.of(2010, 12, 23))
-                .duration(Duration.ofMinutes(120))
+                .duration(56)
                 .build();
         String body = mapper.writeValueAsString(film);
         mockMvc.perform(post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
@@ -94,7 +93,7 @@ public class ValidationFilmsControllerTest {
                 .name("Hooror 1")
                 .description("This is Horor")
                 .releaseDate(LocalDate.of(1895, 12, 28))
-                .duration(Duration.ofMinutes(120))
+                .duration(78)
                 .build();
         String body = mapper.writeValueAsString(film);
         mockMvc.perform(post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
@@ -108,7 +107,7 @@ public class ValidationFilmsControllerTest {
                 .name("Hooror 1")
                 .description("This is Horor")
                 .releaseDate(LocalDate.of(1895, 12, 27))
-                .duration(Duration.ofMinutes(120))
+                .duration(45)
                 .build();
         String body = mapper.writeValueAsString(film);
         mockMvc.perform(post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
@@ -122,7 +121,7 @@ public class ValidationFilmsControllerTest {
                 .name("Hooror 1")
                 .description("This is Horor")
                 .releaseDate(LocalDate.of(2010, 12, 23))
-                .duration(Duration.ofMinutes(-120))
+                .duration(-90)
                 .build();
         String body = mapper.writeValueAsString(film);
         mockMvc.perform(post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
@@ -136,7 +135,7 @@ public class ValidationFilmsControllerTest {
                 .name("Hooror 1")
                 .description("This is Horor")
                 .releaseDate(LocalDate.of(2010, 12, 23))
-                .duration(Duration.ofMinutes(0))
+                .duration(0)
                 .build();
         String body = mapper.writeValueAsString(film);
         mockMvc.perform(post("/films").content(body).contentType(MediaType.APPLICATION_JSON))

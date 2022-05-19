@@ -16,16 +16,19 @@ import java.util.Map;
 @Slf4j
 @RequestMapping("/users")
 public class UserController {
-    private final Map<String, User> mapUsers = new HashMap<>();
+    private final Map<Integer, User> mapUsers = new HashMap<>();
+    private int count = 1;
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
         log.info("Получен запрос к эндпоинту /users. Метод POST");
         checkUser(user);
-        if (mapUsers.containsKey(user.getLogin())) {
-            throw new ValidationException("Такой пользователь уже зарегестрирован");
+        if (mapUsers.containsKey(user.getId()) || user.getId() < 0) {
+            throw new ValidationException("Такой пользователь уже зарегестрирован или id отрицательный");
         }
-        mapUsers.put(user.getLogin(), user);
+        user.setId(count);
+        count++;
+        mapUsers.put(user.getId(), user);
         return user;
 
     }
@@ -34,7 +37,10 @@ public class UserController {
     public User update(@Valid @RequestBody User user) {
         log.info("Получен запрос к эндпоинту /users. Метод PUT");
         checkUser(user);
-        mapUsers.put(user.getLogin(), user);
+        if ((!mapUsers.containsKey(user.getId())) || user.getId() < 0) {
+            throw new ValidationException("Такой пользователь не зарегестрирован или id отрицательный");
+        }
+        mapUsers.put(user.getId(), user);
         return user;
     }
 
@@ -45,7 +51,8 @@ public class UserController {
 
     //Проверка валидации фильмов
     private void checkUser(User user) throws ValidationException {
-        if (user.getName() == null) {
+
+        if (user.getName() == null || user.getName().isBlank() || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
         if (user.getBirthday().isAfter(LocalDate.now())) {

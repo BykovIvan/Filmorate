@@ -19,6 +19,6 @@ public class Film {
     @Size(min = 1, max = 200)
     private String description;
     private LocalDate releaseDate;
-    private Duration duration;
+    private int duration;
 
 }
