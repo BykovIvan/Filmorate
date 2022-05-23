@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Builder
 public class Film {
 
-    private int id;                         //id фильма
+    private Long id;                         //id фильма
     @NonNull
     @NotBlank
     private String name;                    //Название фильма

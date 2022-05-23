@@ -18,9 +18,9 @@ import java.util.Map;
 @Component
 public class InMemoryUserStorage implements UserStorage{
 
-    private final Map<Integer, User> mapUsers = new HashMap<>();
+    private final Map<Long, User> mapUsers = new HashMap<>();
 
-    private int count = 1;
+    private Long count = 1L;
 
     @Override
     public User create(User user) {
@@ -32,7 +32,6 @@ public class InMemoryUserStorage implements UserStorage{
         count++;
         mapUsers.put(user.getId(), user);
         return user;
-
     }
 
     @Override
@@ -46,17 +45,35 @@ public class InMemoryUserStorage implements UserStorage{
     }
 
     @Override
-    public void remove(User user) {
-        if (mapUsers.containsKey(user.getId())){
-            mapUsers.remove(user.getId());
+    public User searchById(Long idUser) {
+        if (mapUsers.containsKey(idUser)){
+            return mapUsers.get(idUser);
+        }
+        return null;
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return new ArrayList<>(mapUsers.values());
+    }
+
+//    @Override
+//    public Map<Long, User> getMapOfAllUsers() {
+//        return null;
+//    }
+
+    @Override
+    public void deleteById(Long idUser) {
+        if (mapUsers.containsKey(idUser)){
+            mapUsers.remove(idUser);
         }else {
             throw new ValidationException("Такой пользователь не зарегестрирован");
         }
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return new ArrayList<>(mapUsers.values());
+    public void deleteAllUser() {
+        mapUsers.clear();
     }
 
     //Проверка валидации фильмов

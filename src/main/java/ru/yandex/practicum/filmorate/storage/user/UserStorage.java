@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserStorage {
     /**
@@ -17,17 +18,20 @@ public interface UserStorage {
     /**
      * Обновление пользователя в локальном хранилище
      * Update the user in local storage
+     *
      * @param user
      * @return
      */
     User update(User user) ;
 
     /**
-     * Удаление пользователя из локального хранилища
-     * Remove the user from local storage
-     * @param user
+     * Поиск пользователей по Id
+     * Search user by ID
+     *
+     * @param idUser
+     * @return
      */
-    void remove(User user);
+    User searchById(Long idUser);
 
     /**
      * Получение всех фильмов из хранилища
@@ -35,4 +39,25 @@ public interface UserStorage {
      * @return
      */
     List<User> getAllUsers();
+
+//    /**
+//     * Получить список пользователей в мапе
+//     * Get map of Users
+//     * @return
+//     */
+//    Map<Long, User> getMapOfAllUsers();
+
+    /**
+     * Удаление пользователя из локального хранилища
+     * Remove the user from local storage
+     * @param idUser
+     */
+    void deleteById(Long idUser);
+
+    /**
+     * Удаление всех пользователей
+     * Delete all users
+     */
+    void deleteAllUser();
+
 }

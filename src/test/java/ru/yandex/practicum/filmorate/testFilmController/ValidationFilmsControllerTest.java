@@ -30,7 +30,7 @@ public class ValidationFilmsControllerTest {
     @Test
     public void createFilmResponseOKTest() throws Exception {
         film = Film.builder()
-                .id(10)
+                .id(10L)
                 .name("Hooror 14")
                 .description("This is Horor")
                 .releaseDate(LocalDate.of(2010, 12, 23))
@@ -44,7 +44,7 @@ public class ValidationFilmsControllerTest {
     @Test
     public void createFilmWithEmptyNameOfFilmTest() throws Exception {
         film = Film.builder()
-                .id(0)
+                .id(0L)
                 .name("")
                 .description("This is Horor")
                 .releaseDate(LocalDate.of(2010, 12, 23))
@@ -58,7 +58,7 @@ public class ValidationFilmsControllerTest {
     @Test
     public void createFilmWithBlankNameOfFilmTest() throws Exception {
         film = Film.builder()
-                .id(0)
+                .id(0L)
                 .name("  ")
                 .description("This is Horor")
                 .releaseDate(LocalDate.of(2010, 12, 23))
@@ -72,7 +72,7 @@ public class ValidationFilmsControllerTest {
     @Test
     public void createFilmWithDisMore200CharFilmTest() throws Exception {
         film = Film.builder()
-                .id(0)
+                .id(0L)
                 .name("Hooror 1")
                 .description("This is Horor This is Horor This is Horor This is Horor This is Horor" +
                         " This is Horor This is Horor This is Horor This is Horor This is Horor This is Horor" +
@@ -89,7 +89,7 @@ public class ValidationFilmsControllerTest {
     @Test
     public void createFilmWithReleaseDateFilmTest() throws Exception {
         film = Film.builder()
-                .id(0)
+                .id(0L)
                 .name("Hooror 1")
                 .description("This is Horor")
                 .releaseDate(LocalDate.of(1895, 12, 28))
@@ -103,7 +103,7 @@ public class ValidationFilmsControllerTest {
     @Test
     public void createFilmWithReleaseDateFilmTest2() throws Exception {
         film = Film.builder()
-                .id(0)
+                .id(0L)
                 .name("Hooror 1")
                 .description("This is Horor")
                 .releaseDate(LocalDate.of(1895, 12, 27))
@@ -117,7 +117,7 @@ public class ValidationFilmsControllerTest {
     @Test
     public void createFilmWithNegativeDurationFilmTest() throws Exception {
         film = Film.builder()
-                .id(0)
+                .id(0L)
                 .name("Hooror 1")
                 .description("This is Horor")
                 .releaseDate(LocalDate.of(2010, 12, 23))
@@ -131,7 +131,7 @@ public class ValidationFilmsControllerTest {
     @Test
     public void createFilmWithNegativeDurationIsZeroFilmTest() throws Exception {
         film = Film.builder()
-                .id(0)
+                .id(0L)
                 .name("Hooror 1")
                 .description("This is Horor")
                 .releaseDate(LocalDate.of(2010, 12, 23))

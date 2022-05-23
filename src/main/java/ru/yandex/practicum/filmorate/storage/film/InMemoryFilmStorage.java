@@ -17,8 +17,11 @@ import java.util.Map;
 
 @Component
 public class InMemoryFilmStorage implements FilmStorage{
-    private final Map<Integer, Film> mapFilms = new HashMap<>();
-    private int count = 1;
+
+    private final Map<Long, Film> mapFilms = new HashMap<>();
+
+    private Long count = 1L;
+
     private final LocalDate startFilmDate = LocalDate.of(1895, 12, 28);;
 
     @Override
@@ -56,6 +59,7 @@ public class InMemoryFilmStorage implements FilmStorage{
             throw new ValidationException("Такой фильм не добавлен");
         }
     }
+
 
     //Проверка валидации фильмов
     private void checkFilm(Film film) throws ValidationException {

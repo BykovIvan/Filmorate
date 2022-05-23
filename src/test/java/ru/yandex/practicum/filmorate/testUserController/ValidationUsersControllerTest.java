@@ -29,7 +29,7 @@ public class ValidationUsersControllerTest {
     @Test
     public void createUserResponseOKTest() throws Exception {
         user = User.builder()
-                .id(0)
+                .id(0L)
                 .email("bukov123@yadenx.ru")
                 .login("Homayak")
                 .name("Ivan")
@@ -43,7 +43,7 @@ public class ValidationUsersControllerTest {
     @Test
     public void createUserNotEmptyEmailTest() throws Exception {
         user = User.builder()
-                .id(0)
+                .id(0L)
                 .email("")
                 .login("Homayak")
                 .name("Ivan")
@@ -57,7 +57,7 @@ public class ValidationUsersControllerTest {
     @Test
     public void createUserCorrectEmailTest() throws Exception {
         user = User.builder()
-                .id(0)
+                .id(0L)
                 .email("ijsdijdw.fww@")
                 .login("Homayak")
                 .name("Ivan")
@@ -71,7 +71,7 @@ public class ValidationUsersControllerTest {
     @Test
     public void createUserEmptyLoginTest() throws Exception {
         user = User.builder()
-                .id(0)
+                .id(0L)
                 .email("bukov123@yadenx.ru")
                 .login("")
                 .name("Ivan")
@@ -85,7 +85,7 @@ public class ValidationUsersControllerTest {
     @Test
     public void createUserWithNameWithBlankTest() throws Exception {
         user = User.builder()
-                .id(0)
+                .id(0L)
                 .email("bukov123@yadenx.ru")
                 .login(" sd ds")
                 .name("Ivan")
@@ -99,7 +99,7 @@ public class ValidationUsersControllerTest {
     @Test
     public void createUserWithNameIsEmptyTest() throws Exception {
         user = User.builder()
-                .id(0)
+                .id(0L)
                 .email("bukov123@yadenx.ru")
                 .login("Ivan")
                 .name("")
@@ -113,7 +113,7 @@ public class ValidationUsersControllerTest {
     @Test
     public void createUserDateOfBirthIsNowTest() throws Exception {
         user = User.builder()
-                .id(10)
+                .id(10L)
                 .email("bukov125@yadenx.ru")
                 .login("Homayak2")
                 .name("Ivan4")
@@ -127,7 +127,7 @@ public class ValidationUsersControllerTest {
     @Test
     public void createUserDateOfBirthIsFutureTest() throws Exception {
         user = User.builder()
-                .id(0)
+                .id(0L)
                 .email("bukov123@yadenx.ru")
                 .login("Homayak")
                 .name("Ivan")
