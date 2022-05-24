@@ -19,7 +19,8 @@ import java.util.*;
 @Service
 public class UserService {
 
-    private Long count = 1L;
+    private Long count = 1L;        //Счетчик для Id
+
     private final UserStorage userStorage;
 
     public UserService(UserStorage userStorage) {
@@ -35,7 +36,7 @@ public class UserService {
      */
     public User createUser(User user){
         checkUser(user);
-        if (userStorage.create(count, user) != null || user.getId() < 0){
+        if (userStorage.create(count, user) != null){
             user.setId(count);
             return userStorage.getUserById(count++);
         }else {
@@ -52,7 +53,7 @@ public class UserService {
      */
     public User updateUser(User user){
         checkUser(user);
-        if (userStorage.update(user.getId(), user) != null || user.getId() < 0){
+        if (userStorage.update(user.getId(), user) != null && user.getId() > 0){
             return userStorage.getUserById(user.getId());
         }else {
             throw new ValidationException("Такого пользователя не существует");
@@ -69,6 +70,20 @@ public class UserService {
         return userStorage.getAllUsers();
     }
 
+    /**
+     * Получение пользователя по Id
+     * Get user by ID
+     *
+     * @return
+     */
+    public User getUserById(Long idUser){
+        if (userStorage.containsUserById(idUser)){
+            return userStorage.getUserById(idUser);
+        }else{
+            throw new ValidationException("Нет такого пользователя c ID " + idUser);
+        }
+    }
+
 
     /**
      * Добавление в друзья пользователя
@@ -81,8 +96,22 @@ public class UserService {
     public User addFriend(Long idUser, Long idFriend){
         if (userStorage.containsUserById(idUser)){
             if (userStorage.containsUserById(idFriend)){
-                userStorage.getUserById(idUser).getListIdOfFriends().add(idFriend);
-                userStorage.getUserById(idFriend).getListIdOfFriends().add(idUser);
+                //Добавление друга пользователю в друзья
+                if (userStorage.getUserById(idUser).getListIdOfFriends() == null){
+                    Set<Long> setIdUser = new HashSet<>();
+                    setIdUser.add(idFriend);
+                    userStorage.getUserById(idUser).setListIdOfFriends(setIdUser);
+                }else {
+                    userStorage.getUserById(idUser).getListIdOfFriends().add(idFriend);
+                }
+                //добавление пользователя другу в друзья
+                if (userStorage.getUserById(idFriend).getListIdOfFriends() == null){
+                    Set<Long> setIdFriend = new HashSet<>();
+                    setIdFriend.add(idUser);
+                    userStorage.getUserById(idFriend).setListIdOfFriends(setIdFriend);
+                }else {
+                    userStorage.getUserById(idFriend).getListIdOfFriends().add(idUser);
+                }
             }else{
                 throw new ValidationException("Друг с таким id не существует");
             }
@@ -150,13 +179,15 @@ public class UserService {
             if (userStorage.containsUserById(idOther)){
                 Set<Long> idOfFirst = userStorage.getUserById(id).getListIdOfFriends();
                 Set<Long> idOfSecond = userStorage.getUserById(idOther).getListIdOfFriends();
-                Set<Long> idOfMutualFriends = new HashSet<>(idOfFirst);
-                idOfMutualFriends.retainAll(idOfSecond);                //получение общих друзей по их спискам
-                for (Long idOfMutualFriend : idOfMutualFriends) {
-                    if (userStorage.containsUserById(idOfMutualFriend)){
-                        mutualListFriends.add(userStorage.getUserById(idOfMutualFriend));
-                    }else {
-                        throw new ValidationException("Нет такого пользователя в списке");
+                if (idOfFirst != null && idOfSecond != null){
+                    Set<Long> idOfMutualFriends = new HashSet<>(idOfFirst);
+                    idOfMutualFriends.retainAll(idOfSecond);                //получение общих друзей по их спискам
+                    for (Long idOfMutualFriend : idOfMutualFriends) {
+                        if (userStorage.containsUserById(idOfMutualFriend)){
+                            mutualListFriends.add(userStorage.getUserById(idOfMutualFriend));
+                        }else {
+                            throw new ValidationException("Нет такого пользователя в списке");
+                        }
                     }
                 }
                 return mutualListFriends;
@@ -177,12 +208,18 @@ public class UserService {
      * @param user
      */
     private void checkUser(User user){
+        for (User getUser : userStorage.getAllUsers()) {
+            if (user.getEmail().equals(getUser.getEmail())){
+                throw new ValidationException("Такой пользователь уже существует");
+            }
+        }
         if (user.getName() == null || user.getName().isBlank() || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
         if (user.getBirthday().isAfter(LocalDate.now())) {
             throw new ValidationException("Дата рождения не может быть в будущем");
         }
+
     }
 
 

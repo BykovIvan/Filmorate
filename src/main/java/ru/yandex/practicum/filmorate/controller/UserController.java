@@ -39,6 +39,20 @@ public class UserController {
         return userService.getAllUsers();
     }
 
+    //Получение списка всех пользователей
+    @GetMapping("/{id}")
+    public User getUserById(@Valid @PathVariable("id") Long idUser) {
+        return userService.getUserById(idUser);
+    }
+
+    //Удаление пользователя
+//    @DeleteMapping("/{id}")
+//    public String deleteUser(@Valid @PathVariable("id") Long idUser){
+//        log.info("Получен запрос к эндпоинту /users. Метод DELETE");
+//        userService.removeUserById(idUser)
+//        return "Удален пользователь с ID - " + idUser;
+//    }
+
     //Добавление в друзья PUT /users/{id}/friends/{friendId}
     @PutMapping("/{id}/friends/{friendId}")
     public User addFriend(@Valid @PathVariable("id") Long idUser, @PathVariable("friendId") Long idFriend){
