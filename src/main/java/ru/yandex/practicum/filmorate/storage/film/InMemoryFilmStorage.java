@@ -20,30 +20,30 @@ public class InMemoryFilmStorage implements FilmStorage{
 
     private final Map<Long, Film> mapFilms = new HashMap<>();
 
-    private Long count = 1L;
-
-    private final LocalDate startFilmDate = LocalDate.of(1895, 12, 28);;
-
     @Override
-    public Film create(Film film) throws ValidationException {
-        checkFilm(film);
-        if (mapFilms.containsKey(film.getId()) || film.getId() < 0) {
-            throw new ValidationException("Такой фильм уже есть в списке или id отрицательный");
+    public Film create(Long idFilm, Film film) {
+        if (mapFilms.containsKey(idFilm)){
+            return null;
         }
-        film.setId(count);
-        count++;
-        mapFilms.put(film.getId(), film);
-        return film;
+        mapFilms.put(idFilm, film);
+        return mapFilms.get(idFilm);
     }
 
     @Override
-    public Film update(Film film) throws ValidationException  {
-        checkFilm(film);
-        if ((!mapFilms.containsKey(film.getId())) || film.getId() < 0) {
-            throw new ValidationException("Такой фильм не добавлен или id отрицательный");
+    public Film update(Long idFilm, Film film) {
+        if (mapFilms.containsKey(idFilm)){
+            mapFilms.put(idFilm, film);
+            return mapFilms.get(idFilm);
         }
-        mapFilms.put(film.getId(), film);
-        return film;
+        return null;
+    }
+
+    @Override
+    public Film getFilmById(Long idFilm) {
+        if (mapFilms.containsKey(idFilm)){
+            return mapFilms.get(idFilm);
+        }
+        return null;
     }
 
     @Override
@@ -52,22 +52,23 @@ public class InMemoryFilmStorage implements FilmStorage{
     }
 
     @Override
-    public void delete(Film film) {
-        if (mapFilms.containsKey(film.getId())){
-            mapFilms.remove(film.getId());
-        }else {
-            throw new ValidationException("Такой фильм не добавлен");
+    public boolean deleteFilmById(Long idFilm) {
+        if (mapFilms.containsKey(idFilm)){
+            mapFilms.remove(idFilm);
+            return true;
         }
+        return false;
+    }
+
+    @Override
+    public void deleteAllFilms() {
+        mapFilms.clear();
+    }
+
+    @Override
+    public boolean containsFilmById(Long idFilm) {
+        return mapFilms.containsKey(idFilm);
     }
 
 
-    //Проверка валидации фильмов
-    private void checkFilm(Film film) throws ValidationException {
-        if (film.getReleaseDate().isBefore(startFilmDate)) {
-            throw new ValidationException("Дата релиза должна быть не раньше 28 декабря 1895 года");
-        }
-        if (film.getDuration() <= 0) {
-            throw new ValidationException("Продолжительность фильма должна быть положительной");
-        }
-    }
 }

@@ -1,10 +1,8 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,32 +18,26 @@ public class InMemoryUserStorage implements UserStorage{
 
     private final Map<Long, User> mapUsers = new HashMap<>();
 
-    private Long count = 1L;
-
     @Override
-    public User create(User user) {
-        checkUser(user);
-        if (mapUsers.containsKey(user.getId()) || user.getId() < 0) {
-            throw new ValidationException("Такой пользователь уже зарегестрирован или id отрицательный");
+    public User create(Long idUser, User user) {
+        if (mapUsers.containsKey(idUser)){
+            return null;
         }
-        user.setId(count);
-        count++;
-        mapUsers.put(user.getId(), user);
-        return user;
+        mapUsers.put(idUser, user);
+        return mapUsers.get(idUser);
     }
 
     @Override
-    public User update(User user) {
-        checkUser(user);
-        if ((!mapUsers.containsKey(user.getId())) || user.getId() < 0) {
-            throw new ValidationException("Такой пользователь не зарегестрирован или id отрицательный");
+    public User update(Long idUser, User user) {
+        if (mapUsers.containsKey(idUser)){
+            mapUsers.put(idUser, user);
+            return mapUsers.get(idUser);
         }
-        mapUsers.put(user.getId(), user);
-        return user;
+        return null;
     }
 
     @Override
-    public User searchById(Long idUser) {
+    public User getUserById(Long idUser) {
         if (mapUsers.containsKey(idUser)){
             return mapUsers.get(idUser);
         }
@@ -57,18 +49,14 @@ public class InMemoryUserStorage implements UserStorage{
         return new ArrayList<>(mapUsers.values());
     }
 
-//    @Override
-//    public Map<Long, User> getMapOfAllUsers() {
-//        return null;
-//    }
-
     @Override
-    public void deleteById(Long idUser) {
+    public boolean deleteUserById(Long idUser) {
         if (mapUsers.containsKey(idUser)){
             mapUsers.remove(idUser);
-        }else {
-            throw new ValidationException("Такой пользователь не зарегестрирован");
+            return true;
         }
+        return false;
+
     }
 
     @Override
@@ -76,15 +64,9 @@ public class InMemoryUserStorage implements UserStorage{
         mapUsers.clear();
     }
 
-    //Проверка валидации фильмов
-    private void checkUser(User user) throws ValidationException {
-
-        if (user.getName() == null || user.getName().isBlank() || user.getName().isEmpty()) {
-            user.setName(user.getLogin());
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidationException("Дата рождения не может быть в будущем");
-        }
+    @Override
+    public boolean containsUserById(Long idUser) {
+        return mapUsers.containsKey(idUser);
     }
 
 }

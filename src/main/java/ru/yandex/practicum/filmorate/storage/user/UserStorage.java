@@ -1,10 +1,8 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
-import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
-import java.util.Map;
 
 public interface UserStorage {
     /**
@@ -13,7 +11,7 @@ public interface UserStorage {
      * @param user
      * @return
      */
-    User create(User user) ;
+    User create(Long idUser, User user);
 
     /**
      * Обновление пользователя в локальном хранилище
@@ -22,42 +20,46 @@ public interface UserStorage {
      * @param user
      * @return
      */
-    User update(User user) ;
+    User update(Long idUser, User user);
 
     /**
      * Поиск пользователей по Id
-     * Search user by ID
+     * Get user by ID
      *
      * @param idUser
      * @return
      */
-    User searchById(Long idUser);
+    User getUserById(Long idUser);
 
     /**
-     * Получение всех фильмов из хранилища
+     * Получение всех пользователей из хранилища
      * Getting all users from local storage
      * @return
      */
     List<User> getAllUsers();
 
-//    /**
-//     * Получить список пользователей в мапе
-//     * Get map of Users
-//     * @return
-//     */
-//    Map<Long, User> getMapOfAllUsers();
-
     /**
      * Удаление пользователя из локального хранилища
      * Remove the user from local storage
+     *
      * @param idUser
+     * @return
      */
-    void deleteById(Long idUser);
+    boolean deleteUserById(Long idUser);
 
     /**
      * Удаление всех пользователей
      * Delete all users
      */
     void deleteAllUser();
+
+    /**
+     * Проверка содержиться ли пользователь по его ID
+     * Checking if the user is contained by his ID
+     *
+     * @param idUser
+     * @return
+     */
+    boolean containsUserById(Long idUser);
 
 }
