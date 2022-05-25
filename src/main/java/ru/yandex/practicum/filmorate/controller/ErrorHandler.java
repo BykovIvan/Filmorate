@@ -18,11 +18,11 @@ public class ErrorHandler {
     }
 
     //404 — для всех ситуаций, если искомый объект не найден
-//    @ExceptionHandler
-//    @ResponseStatus(HttpStatus.NOT_FOUND)
-//    public ErrorResponse handleIncorrectParameterException(final IllegalStateException e){
-//        return new ErrorResponse(e.getMessage());
-//    }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleIncorrectParameterException(final NullPointerException e){
+        return new ErrorResponse(e.getMessage());
+    }
 
     //500 — если возникло исключение
     @ExceptionHandler
@@ -31,9 +31,9 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    //доделать ГЕТ популярных
-    //Доделать контроллеры
-    //Доделать ЕрорХандлер
+    //доделать ГЕТ популярных+
+    //Доделать контроллеры+
+    //Доделать ЕрорХандлер+
     //Доделать класс с эксепшином через ЕрорРеспонс
     //Тесты для контроллеров
     //Коментарии у всех подписать

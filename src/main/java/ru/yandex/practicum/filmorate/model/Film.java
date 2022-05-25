@@ -21,6 +21,7 @@ public class Film {
     private String description;             //Описание фильма
     private LocalDate releaseDate;          //Дата выхода фильма
     private int duration;                   //Продолжительность фильма
+    private int rate;
     private Set<Long> likesFromUsers;  //Список пользователей кто поставил лайк фильму и их количество у каждого фильма
 
 }

@@ -70,9 +70,9 @@ public class FilmController {
 
     //Получение списка из первых фильмов по кличеству лайков /films/popular?count={count}
     //возвращает список из первых count фильмов по количеству лайков
-    @GetMapping
-    public List<Film> getFilmByRating(){
-        return null;
+    @GetMapping("/popular")
+    public List<Film> getFilmsByRating(@Valid @RequestParam(required = false) Long count){
+        return filmService.getFilmsByRating(count);
     }
 
 

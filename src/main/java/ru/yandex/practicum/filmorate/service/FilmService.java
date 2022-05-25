@@ -3,14 +3,12 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+//import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Класс отвечает за операции с фильмами, — добавление и удаление лайка,
@@ -27,12 +25,13 @@ public class FilmService {
     private final LocalDate startFilmDate = LocalDate.of(1895, 12, 28); //Дата начала кинопроизводства
 
     private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
+//    private final UserStorage userStorage;
 
 
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
+    public FilmService(FilmStorage filmStorage) {
+//    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
         this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
+//        this.userStorage = userStorage;
     }
 
     /**
@@ -43,7 +42,7 @@ public class FilmService {
      * @return
      */
     public Film create(Film film){
-        checkFilm(film);
+        checkFilm(film, true);
         if (filmStorage.create(count, film) != null || film.getId() < 0) {
             film.setId(count);
             return filmStorage.getFilmById(count++);
@@ -60,11 +59,11 @@ public class FilmService {
      * @return
      */
     public Film updateFilm(Film film){
-        checkFilm(film);
-        if (filmStorage.update(film.getId(), film) != null || film.getId() < 0){
+        checkFilm(film, false);
+        if (filmStorage.update(film.getId(), film) != null && film.getId() > 0){
             return filmStorage.getFilmById(film.getId());
         }else {
-            throw new ValidationException("Такой фильм не добавлен или id отрицательный");
+            throw new NullPointerException("Такой фильм не добавлен или id отрицательный");
         }
     }
 
@@ -88,7 +87,7 @@ public class FilmService {
         if (filmStorage.containsFilmById(idFilm)){
             return filmStorage.getFilmById(idFilm);
         }else{
-            throw new ValidationException("Нет такого пользователя c ID " + idFilm);
+            throw new NullPointerException("Нет такого пользователя c ID " + idFilm);
         }
     }
 
@@ -102,20 +101,25 @@ public class FilmService {
      */
     public Film addLikeFilm(Long idFilm, Long idUser){
         if (filmStorage.containsFilmById(idFilm)){
-            if (userStorage.containsUserById(idUser)){
+//            if (userStorage.containsUserById(idUser)){   //Проверка на наличия пользователя в хранилище
                 if (filmStorage.getFilmById(idFilm).getLikesFromUsers() == null){
                     Set<Long> setForLikes = new HashSet<>();
                     setForLikes.add(idUser);
                     filmStorage.getFilmById(idFilm).setLikesFromUsers(setForLikes);
-                }else{
+                    filmStorage.getFilmById(idFilm).setRate(filmStorage.getFilmById(idFilm).getRate() + 1);
+                }else if (!(filmStorage.getFilmById(idFilm).getLikesFromUsers().contains(idUser))){
                     filmStorage.getFilmById(idFilm).getLikesFromUsers().add(idUser);
+                    filmStorage.getFilmById(idFilm).setRate(filmStorage.getFilmById(idFilm).getRate() + 1);
+                }else {
+                    throw new NullPointerException("Такой пользователь уже ставил лайк данному фильму");
                 }
                 return filmStorage.getFilmById(idFilm);
-            }else {
-                throw new RuntimeException("Такокго пользователя не существует!");
-            }
+//            }
+//            else {
+//                throw new RuntimeException("Такокго пользователя не существует!");
+//            }
         }else {
-            throw new RuntimeException("Такого фильма не существует");
+            throw new NullPointerException("Такого фильма не существует");
         }
     }
 
@@ -129,22 +133,75 @@ public class FilmService {
      */
     public Film deleteLikeFilm(Long idFilm, Long idUser){
         if (filmStorage.containsFilmById(idFilm)){
-//            if (userStorage.containsUserById(idUser)){
+//            if (userStorage.containsUserById(idUser)){  //Проверка на наличия пользователя в хранилище
                 if (filmStorage.getFilmById(idFilm).getLikesFromUsers() != null &&
                         filmStorage.getFilmById(idFilm).getLikesFromUsers().contains(idUser)){
 
                     filmStorage.getFilmById(idFilm).getLikesFromUsers().remove(idUser);
+                    filmStorage.getFilmById(idFilm).setRate(filmStorage.getFilmById(idFilm).getRate() - 1);
 
                     return filmStorage.getFilmById(idFilm);
                 }else{
-                    throw new ValidationException("Список лайков пуст!");
+                    throw new NullPointerException("Список лайков пуст!");
                 }
 //            }
 //            else {
 //                throw new ValidationException("Такокго пользователя не существует!");
 //            }
         }else {
-            throw new ValidationException("Такого фильма не существует!");
+            throw new NullPointerException("Такого фильма не существует!");
+        }
+    }
+
+    //get popular films
+
+    /**
+     * Получение фильмов по его популярности
+     * Get popular film by rating
+     *
+     *
+     * @param count
+     * @return
+     */
+    public List<Film> getFilmsByRating(Long count){
+        List<Film> list = filmStorage.getAllFilms();
+        if (count == null){
+            return list.stream()
+                    .filter(film -> film.getRate() >= 0)
+                    .sorted(Comparator.comparingInt(Film::getRate)
+                            .reversed())
+                    .limit(10)
+                    .collect(Collectors.toList());
+        }else {
+            return list.stream()
+                    .filter(film -> film.getRate() >= 0)
+                    .sorted(Comparator.comparingInt(Film::getRate)
+                            .reversed())
+                    .limit(count)
+                    .collect(Collectors.toList());
+
+        }
+    }
+
+    /**
+     * Проверка валидации при создании фильмов
+     * Chech validation films
+     *
+     * @param film
+     */
+    private void checkFilm(Film film, Boolean isCreate){
+        if (isCreate){
+            for (Film getFilm : filmStorage.getAllFilms()) {
+                if (film.getName().equals(getFilm.getName()) && film.getReleaseDate().equals(film.getReleaseDate())){
+                    throw new ValidationException("Такой фильм уже добавлен");
+                }
+            }
+        }
+        if (film.getReleaseDate().isBefore(startFilmDate)) {
+            throw new ValidationException("Дата релиза должна быть не раньше 28 декабря 1895 года");
+        }
+        if (film.getDuration() <= 0) {
+            throw new ValidationException("Продолжительность фильма должна быть положительной");
         }
     }
 
@@ -158,24 +215,4 @@ public class FilmService {
 //    }
 //
 
-
-    /**
-     * Проверка валидации фильмов
-     * Chech validation films
-     *
-     * @param film
-     */
-    private void checkFilm(Film film){
-        for (Film getFilm : filmStorage.getAllFilms()) {
-            if (film.getName().equals(getFilm.getName()) && film.getReleaseDate().equals(getFilm.getReleaseDate())){
-                throw new ValidationException("Такой фильм уже добавлен");
-            }
-        }
-        if (film.getReleaseDate().isBefore(startFilmDate)) {
-            throw new ValidationException("Дата релиза должна быть не раньше 28 декабря 1895 года");
-        }
-        if (film.getDuration() <= 0) {
-            throw new ValidationException("Продолжительность фильма должна быть положительной");
-        }
-    }
 }

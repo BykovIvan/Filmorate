@@ -35,7 +35,7 @@ public class UserService {
      * @return
      */
     public User createUser(User user){
-        checkUser(user);
+        checkUser(user, true);
         if (userStorage.create(count, user) != null){
             user.setId(count);
             return userStorage.getUserById(count++);
@@ -52,11 +52,11 @@ public class UserService {
      * @return
      */
     public User updateUser(User user){
-        checkUser(user);
+        checkUser(user, false);
         if (userStorage.update(user.getId(), user) != null && user.getId() > 0){
             return userStorage.getUserById(user.getId());
         }else {
-            throw new ValidationException("Такого пользователя не существует");
+            throw new NullPointerException("Такого пользователя не существует");
         }
     }
 
@@ -80,7 +80,7 @@ public class UserService {
         if (userStorage.containsUserById(idUser)){
             return userStorage.getUserById(idUser);
         }else{
-            throw new ValidationException("Нет такого пользователя c ID " + idUser);
+            throw new NullPointerException("Нет такого пользователя c ID " + idUser);
         }
     }
 
@@ -113,10 +113,10 @@ public class UserService {
                     userStorage.getUserById(idFriend).getListIdOfFriends().add(idUser);
                 }
             }else{
-                throw new ValidationException("Друг с таким id не существует");
+                throw new NullPointerException("Друг с таким id не существует");
             }
         }else{
-            throw new ValidationException("Пользователь с таким id не существует");
+            throw new NullPointerException("Пользователь с таким id не существует");
         }
         return userStorage.getUserById(idUser);
     }
@@ -135,10 +135,10 @@ public class UserService {
                 userStorage.getUserById(idUser).getListIdOfFriends().remove(idFriend);
                 userStorage.getUserById(idFriend).getListIdOfFriends().remove(idUser);
             }else{
-                throw new ValidationException("Друг с таким id не существует");
+                throw new NullPointerException("Друг с таким id не существует");
             }
         }else{
-            throw new ValidationException("Пользователь с таким id не существует");
+            throw new NullPointerException("Пользователь с таким id не существует");
         }
         return userStorage.getUserById(idUser);
     }
@@ -161,7 +161,7 @@ public class UserService {
             }
             return listOfFriends;
         }else{
-            throw new ValidationException("Нет такого пользователя");
+            throw new NullPointerException("Нет такого пользователя");
         }
     }
 
@@ -186,16 +186,16 @@ public class UserService {
                         if (userStorage.containsUserById(idOfMutualFriend)){
                             mutualListFriends.add(userStorage.getUserById(idOfMutualFriend));
                         }else {
-                            throw new ValidationException("Нет такого пользователя в списке");
+                            throw new NullPointerException("Нет такого пользователя в списке");
                         }
                     }
                 }
                 return mutualListFriends;
             }else{
-                throw new ValidationException("Нет такого пользователя 2");
+                throw new NullPointerException("Нет такого пользователя 2");
             }
         }else {
-            throw new ValidationException("Нет такого пользователя 1");
+            throw new NullPointerException("Нет такого пользователя 1");
         }
 
     }
@@ -207,12 +207,15 @@ public class UserService {
      *
      * @param user
      */
-    private void checkUser(User user){
-        for (User getUser : userStorage.getAllUsers()) {
-            if (user.getEmail().equals(getUser.getEmail())){
-                throw new ValidationException("Такой пользователь уже существует");
+    private void checkUser(User user, Boolean isCreated){
+        if (isCreated){
+            for (User getUser : userStorage.getAllUsers()) {
+                if (user.getEmail().equals(getUser.getEmail())){
+                    throw new ValidationException("Такой пользователь уже существует");
+                }
             }
         }
+
         if (user.getName() == null || user.getName().isBlank() || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
