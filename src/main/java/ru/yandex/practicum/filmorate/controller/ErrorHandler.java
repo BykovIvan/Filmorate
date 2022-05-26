@@ -4,39 +4,50 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.yandex.practicum.filmorate.exceptions.NotFoundObjectException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
 @RestControllerAdvice
 public class ErrorHandler {
 
-    //400 — если ошибка валидации: ValidationException
+    /**
+     * Ошибка валидации, код 400
+     * Validation error
+     *
+     * @param e
+     * @return
+     */
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIncorrectParameterException(final ValidationException e){
         return new ErrorResponse(e.getMessage());
     }
 
-    //404 — для всех ситуаций, если искомый объект не найден
+    /**
+     * Все ситуаций, когда искомый объект не найден, код 404
+     * All situations when the desired object is not found
+     *
+     * @param e
+     * @return
+     */
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleIncorrectParameterException(final NullPointerException e){
+    public ErrorResponse handleIncorrectParameterException(final NotFoundObjectException e){
         return new ErrorResponse(e.getMessage());
     }
 
-    //500 — если возникло исключение
+    /**
+     * Прочие исключения, код 500
+     * Other exception
+     *
+     * @param e
+     * @return
+     */
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleIncorrectParameterException(final Exception e){
-        return new ErrorResponse(e.getMessage());
+    public ErrorResponse handleIncorrectParameterException(final Throwable e){
+        return new ErrorResponse("Произошла непредвиденная ошибка.");
     }
-
-    //доделать ГЕТ популярных+
-    //Доделать контроллеры+
-    //Доделать ЕрорХандлер+
-    //Доделать класс с эксепшином через ЕрорРеспонс
-    //Тесты для контроллеров
-    //Коментарии у всех подписать
-
 
 }

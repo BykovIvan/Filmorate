@@ -1,5 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
+/**
+ * Класс для формирования ответа при ошибках
+ * Class for generating a response in case of errors
+ */
 public class ErrorResponse {
     private final String error;                 //Название ошибки
 

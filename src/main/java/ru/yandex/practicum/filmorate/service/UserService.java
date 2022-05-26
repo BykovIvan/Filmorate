@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exceptions.NotFoundObjectException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -56,7 +57,7 @@ public class UserService {
         if (userStorage.update(user.getId(), user) != null && user.getId() > 0){
             return userStorage.getUserById(user.getId());
         }else {
-            throw new NullPointerException("Такого пользователя не существует");
+            throw new NotFoundObjectException("Такого пользователя не существует");
         }
     }
 
@@ -80,7 +81,7 @@ public class UserService {
         if (userStorage.containsUserById(idUser)){
             return userStorage.getUserById(idUser);
         }else{
-            throw new NullPointerException("Нет такого пользователя c ID " + idUser);
+            throw new NotFoundObjectException("Нет такого пользователя c ID " + idUser);
         }
     }
 
@@ -113,10 +114,10 @@ public class UserService {
                     userStorage.getUserById(idFriend).getListIdOfFriends().add(idUser);
                 }
             }else{
-                throw new NullPointerException("Друг с таким id не существует");
+                throw new NotFoundObjectException("Друг с таким id не существует");
             }
         }else{
-            throw new NullPointerException("Пользователь с таким id не существует");
+            throw new NotFoundObjectException("Пользователь с таким id не существует");
         }
         return userStorage.getUserById(idUser);
     }
@@ -135,10 +136,10 @@ public class UserService {
                 userStorage.getUserById(idUser).getListIdOfFriends().remove(idFriend);
                 userStorage.getUserById(idFriend).getListIdOfFriends().remove(idUser);
             }else{
-                throw new NullPointerException("Друг с таким id не существует");
+                throw new NotFoundObjectException("Друг с таким id не существует");
             }
         }else{
-            throw new NullPointerException("Пользователь с таким id не существует");
+            throw new NotFoundObjectException("Пользователь с таким id не существует");
         }
         return userStorage.getUserById(idUser);
     }
@@ -161,7 +162,7 @@ public class UserService {
             }
             return listOfFriends;
         }else{
-            throw new NullPointerException("Нет такого пользователя");
+            throw new NotFoundObjectException("Нет такого пользователя");
         }
     }
 
@@ -186,16 +187,16 @@ public class UserService {
                         if (userStorage.containsUserById(idOfMutualFriend)){
                             mutualListFriends.add(userStorage.getUserById(idOfMutualFriend));
                         }else {
-                            throw new NullPointerException("Нет такого пользователя в списке");
+                            throw new NotFoundObjectException("Нет такого пользователя в списке");
                         }
                     }
                 }
                 return mutualListFriends;
             }else{
-                throw new NullPointerException("Нет такого пользователя 2");
+                throw new NotFoundObjectException("Нет такого пользователя 2");
             }
         }else {
-            throw new NullPointerException("Нет такого пользователя 1");
+            throw new NotFoundObjectException("Нет такого пользователя 1");
         }
 
     }
@@ -215,7 +216,6 @@ public class UserService {
                 }
             }
         }
-
         if (user.getName() == null || user.getName().isBlank() || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }

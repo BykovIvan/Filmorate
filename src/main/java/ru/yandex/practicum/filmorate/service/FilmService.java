@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exceptions.NotFoundObjectException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -47,7 +48,7 @@ public class FilmService {
             film.setId(count);
             return filmStorage.getFilmById(count++);
         }else {
-            throw new ValidationException("Такой фильм уже есть в списке или id отрицательный");
+            throw new NotFoundObjectException("Такой фильм уже есть в списке или id отрицательный");
         }
     }
 
@@ -63,7 +64,7 @@ public class FilmService {
         if (filmStorage.update(film.getId(), film) != null && film.getId() > 0){
             return filmStorage.getFilmById(film.getId());
         }else {
-            throw new NullPointerException("Такой фильм не добавлен или id отрицательный");
+            throw new NotFoundObjectException("Такой фильм не добавлен или id отрицательный");
         }
     }
 
@@ -87,7 +88,7 @@ public class FilmService {
         if (filmStorage.containsFilmById(idFilm)){
             return filmStorage.getFilmById(idFilm);
         }else{
-            throw new NullPointerException("Нет такого пользователя c ID " + idFilm);
+            throw new NotFoundObjectException("Нет такого пользователя c ID " + idFilm);
         }
     }
 
@@ -111,7 +112,7 @@ public class FilmService {
                     filmStorage.getFilmById(idFilm).getLikesFromUsers().add(idUser);
                     filmStorage.getFilmById(idFilm).setRate(filmStorage.getFilmById(idFilm).getRate() + 1);
                 }else {
-                    throw new NullPointerException("Такой пользователь уже ставил лайк данному фильму");
+                    throw new NotFoundObjectException("Такой пользователь уже ставил лайк данному фильму");
                 }
                 return filmStorage.getFilmById(idFilm);
 //            }
@@ -119,7 +120,7 @@ public class FilmService {
 //                throw new RuntimeException("Такокго пользователя не существует!");
 //            }
         }else {
-            throw new NullPointerException("Такого фильма не существует");
+            throw new NotFoundObjectException("Такого фильма не существует");
         }
     }
 
@@ -142,18 +143,16 @@ public class FilmService {
 
                     return filmStorage.getFilmById(idFilm);
                 }else{
-                    throw new NullPointerException("Список лайков пуст!");
+                    throw new NotFoundObjectException("Список лайков пуст!");
                 }
 //            }
 //            else {
 //                throw new ValidationException("Такокго пользователя не существует!");
 //            }
         }else {
-            throw new NullPointerException("Такого фильма не существует!");
+            throw new NotFoundObjectException("Такого фильма не существует!");
         }
     }
-
-    //get popular films
 
     /**
      * Получение фильмов по его популярности
@@ -204,7 +203,6 @@ public class FilmService {
             throw new ValidationException("Продолжительность фильма должна быть положительной");
         }
     }
-
 
 //    public void delete(Film film) {
 //        if (mapFilms.containsKey(film.getId())){
