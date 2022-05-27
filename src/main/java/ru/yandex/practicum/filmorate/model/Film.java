@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NonNull;
 
 import javax.validation.constraints.*;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Set;
 
