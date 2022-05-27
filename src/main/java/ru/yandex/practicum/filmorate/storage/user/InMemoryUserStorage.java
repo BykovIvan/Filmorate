@@ -14,13 +14,13 @@ import java.util.Map;
  */
 
 @Component
-public class InMemoryUserStorage implements UserStorage{
+public class InMemoryUserStorage implements UserStorage {
 
     private final Map<Long, User> mapUsers = new HashMap<>();
 
     @Override
     public User create(Long idUser, User user) {
-        if (mapUsers.containsKey(idUser)){
+        if (mapUsers.containsKey(idUser)) {
             return null;
         }
         mapUsers.put(idUser, user);
@@ -29,7 +29,7 @@ public class InMemoryUserStorage implements UserStorage{
 
     @Override
     public User update(Long idUser, User user) {
-        if (mapUsers.containsKey(idUser)){
+        if (mapUsers.containsKey(idUser)) {
             mapUsers.put(idUser, user);
             return mapUsers.get(idUser);
         }
@@ -38,7 +38,7 @@ public class InMemoryUserStorage implements UserStorage{
 
     @Override
     public User getUserById(Long idUser) {
-        if (mapUsers.containsKey(idUser)){
+        if (mapUsers.containsKey(idUser)) {
             return mapUsers.get(idUser);
         }
         return null;
@@ -51,7 +51,7 @@ public class InMemoryUserStorage implements UserStorage{
 
     @Override
     public boolean deleteUserById(Long idUser) {
-        if (mapUsers.containsKey(idUser)){
+        if (mapUsers.containsKey(idUser)) {
             mapUsers.remove(idUser);
             return true;
         }

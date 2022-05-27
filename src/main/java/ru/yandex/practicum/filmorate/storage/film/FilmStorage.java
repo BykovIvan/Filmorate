@@ -9,6 +9,7 @@ public interface FilmStorage {
     /**
      * Добавление фильма в локальное хранилище
      * Adding the movie to local storage
+     *
      * @param film
      * @return
      */
@@ -35,6 +36,7 @@ public interface FilmStorage {
     /**
      * Получение всех фильмов из хранилища
      * Getting all movies from local storage
+     *
      * @return
      */
     List<Film> getAllFilms();

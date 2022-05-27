@@ -20,7 +20,7 @@ public class ErrorHandler {
      */
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleIncorrectParameterException(final ValidationException e){
+    public ErrorResponse handleIncorrectParameterException(final ValidationException e) {
         return new ErrorResponse(e.getMessage());
     }
 
@@ -33,7 +33,7 @@ public class ErrorHandler {
      */
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleIncorrectParameterException(final NotFoundObjectException e){
+    public ErrorResponse handleIncorrectParameterException(final NotFoundObjectException e) {
         return new ErrorResponse(e.getMessage());
     }
 
@@ -46,7 +46,7 @@ public class ErrorHandler {
      */
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleIncorrectParameterException(final Throwable e){
+    public ErrorResponse handleIncorrectParameterException(final Throwable e) {
         return new ErrorResponse("Произошла непредвиденная ошибка.");
     }
 

@@ -16,13 +16,13 @@ import java.util.Map;
  */
 
 @Component
-public class InMemoryFilmStorage implements FilmStorage{
+public class InMemoryFilmStorage implements FilmStorage {
 
     private final Map<Long, Film> mapFilms = new HashMap<>();
 
     @Override
     public Film create(Long idFilm, Film film) {
-        if (mapFilms.containsKey(idFilm)){
+        if (mapFilms.containsKey(idFilm)) {
             return null;
         }
         mapFilms.put(idFilm, film);
@@ -31,7 +31,7 @@ public class InMemoryFilmStorage implements FilmStorage{
 
     @Override
     public Film update(Long idFilm, Film film) {
-        if (mapFilms.containsKey(idFilm)){
+        if (mapFilms.containsKey(idFilm)) {
             mapFilms.put(idFilm, film);
             return mapFilms.get(idFilm);
         }
@@ -40,7 +40,7 @@ public class InMemoryFilmStorage implements FilmStorage{
 
     @Override
     public Film getFilmById(Long idFilm) {
-        if (mapFilms.containsKey(idFilm)){
+        if (mapFilms.containsKey(idFilm)) {
             return mapFilms.get(idFilm);
         }
         return null;
@@ -53,7 +53,7 @@ public class InMemoryFilmStorage implements FilmStorage{
 
     @Override
     public boolean deleteFilmById(Long idFilm) {
-        if (mapFilms.containsKey(idFilm)){
+        if (mapFilms.containsKey(idFilm)) {
             mapFilms.remove(idFilm);
             return true;
         }

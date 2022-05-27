@@ -2,10 +2,14 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exceptions.NotFoundObjectException;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -14,9 +18,13 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final UserStorage userStorage;
 
-    public UserController(UserService userService) {
+    private Long count = 1L;        //Счетчик для Id
+
+    public UserController(UserService userService, UserStorage userStorage) {
         this.userService = userService;
+        this.userStorage = userStorage;
     }
 
     /**
@@ -29,7 +37,13 @@ public class UserController {
     @PostMapping
     public User create(@Valid @RequestBody User user) {
         log.info("Получен запрос к эндпоинту /users. Метод POST");
-        return userService.createUser(user);
+        checkUser(user, true);
+        if (userStorage.create(count, user) != null) {
+            user.setId(count);
+            return userStorage.getUserById(count++);
+        } else {
+            throw new ValidationException("Такой пользователь уже существует");
+        }
     }
 
     /**
@@ -42,7 +56,12 @@ public class UserController {
     @PutMapping
     public User update(@Valid @RequestBody User user) {
         log.info("Получен запрос к эндпоинту /users. Метод PUT");
-        return userService.updateUser(user);
+        checkUser(user, false);
+        if (userStorage.update(user.getId(), user) != null && user.getId() > 0) {
+            return userStorage.getUserById(user.getId());
+        } else {
+            throw new NotFoundObjectException("Такого пользователя не существует");
+        }
     }
 
     /**
@@ -52,8 +71,8 @@ public class UserController {
      * @return
      */
     @GetMapping
-    public List<User> getUsers() {
-        return userService.getAllUsers();
+    public List<User> allUsers() {
+        return userStorage.getAllUsers();
     }
 
     /**
@@ -64,8 +83,12 @@ public class UserController {
      * @return
      */
     @GetMapping("/{id}")
-    public User getUserById(@Valid @PathVariable("id") Long idUser) {
-        return userService.getUserById(idUser);
+    public User userById(@Valid @PathVariable("id") Long idUser) {
+        if (userStorage.containsUserById(idUser)) {
+            return userStorage.getUserById(idUser);
+        } else {
+            throw new NotFoundObjectException("Нет такого пользователя c ID " + idUser);
+        }
     }
 
     /**
@@ -106,7 +129,7 @@ public class UserController {
      * @return
      */
     @GetMapping("/{id}/friends")
-    public List<User> getFriendsOfUser(@Valid @PathVariable("id") Long idUser) {
+    public List<User> friendsOfUser(@Valid @PathVariable("id") Long idUser) {
         return userService.getFriendsOfUser(idUser);
     }
 
@@ -120,16 +143,31 @@ public class UserController {
      * @return
      */
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> getMutualFriends(@Valid @PathVariable("id") Long id, @PathVariable("otherId") Long idOther) {
+    public List<User> mutualFriends(@Valid @PathVariable("id") Long id, @PathVariable("otherId") Long idOther) {
         return userService.getOfMutualFriends(id, idOther);
     }
 
-    //Удаление пользователя
-//    @DeleteMapping("/{id}")
-//    public String deleteUser(@Valid @PathVariable("id") Long idUser){
-//        log.info("Получен запрос к эндпоинту /users. Метод DELETE");
-//        userService.removeUserById(idUser)
-//        return "Удален пользователь с ID - " + idUser;
-//    }
+    /**
+     * Проверка валидации пользователей
+     * Check validation users
+     *
+     * @param user
+     */
+    private void checkUser(User user, Boolean isCreated) {
+        if (isCreated) {
+            for (User getUser : userStorage.getAllUsers()) {
+                if (user.getEmail().equals(getUser.getEmail())) {
+                    throw new ValidationException("Такой пользователь уже существует");
+                }
+            }
+        }
+        if (user.getName() == null || user.getName().isBlank() || user.getName().isEmpty()) {
+            user.setName(user.getLogin());
+        }
+        if (user.getBirthday().isAfter(LocalDate.now())) {
+            throw new ValidationException("Дата рождения не может быть в будущем");
+        }
+
+    }
 
 }

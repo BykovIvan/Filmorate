@@ -8,6 +8,7 @@ public interface UserStorage {
     /**
      * Добавление пользователя в локальное хранилище
      * Adding the User to local storage
+     *
      * @param user
      * @return
      */
@@ -34,6 +35,7 @@ public interface UserStorage {
     /**
      * Получение всех пользователей из хранилища
      * Getting all users from local storage
+     *
      * @return
      */
     List<User> getAllUsers();
