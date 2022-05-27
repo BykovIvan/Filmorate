@@ -1,9 +1,9 @@
 package ru.yandex.practicum.filmorate.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+/**
+ * Класс исключения возникающий при ошибках заполнения и проверки правильности
+ * Exception class that occurs when padding and validation errors occur
+ */
 public class ValidationException extends RuntimeException {
     public ValidationException(String message) {
         super(message);
