@@ -28,8 +28,6 @@ public class FilmController {
         this.filmStorage = filmStorage;
     }
 
-    //Создание фильма
-
     /**
      * Создание фильма
      * Create movie
