@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -20,7 +21,7 @@ public class UserController {
     private final UserService userService;
     private final UserStorage userStorage;
 
-    private Long count = 1L;        //Счетчик для Id
+//    private Long count = 1L;        //Счетчик для Id
 
     public UserController(UserService userService, UserStorage userStorage) {
         this.userService = userService;
@@ -35,15 +36,17 @@ public class UserController {
      * @return
      */
     @PostMapping
-    public User create(@Valid @RequestBody User user) {
+    public Optional<User> create(@Valid @RequestBody User user) {
         log.info("Получен запрос к эндпоинту /users. Метод POST");
-        checkUser(user, true);
-        if (userStorage.create(count, user) != null) {
-            user.setId(count);
-            return userStorage.getUserById(count++);
-        } else {
-            throw new ValidationException("Такой пользователь уже существует");
-        }
+        checkUser(user, true); // Пока нет всего функционала закомичен
+        return userStorage.create(user);
+
+//        if (userStorage.create(count, user) != null) {
+//            user.setId(count);
+//            return userStorage.getUserById(count++);
+//        } else {
+//            throw new ValidationException("Такой пользователь уже существует");
+//        }
     }
 
     /**
@@ -54,10 +57,10 @@ public class UserController {
      * @return
      */
     @PutMapping
-    public User update(@Valid @RequestBody User user) {
+    public Optional<User> update(@Valid @RequestBody User user) {
         log.info("Получен запрос к эндпоинту /users. Метод PUT");
         checkUser(user, false);
-        if (userStorage.update(user.getId(), user) != null && user.getId() > 0) {
+        if (userStorage.update(user).isPresent() && user.getId() > 0) {
             return userStorage.getUserById(user.getId());
         } else {
             throw new NotFoundObjectException("Такого пользователя не существует");
@@ -83,12 +86,13 @@ public class UserController {
      * @return
      */
     @GetMapping("/{id}")
-    public User userById(@Valid @PathVariable("id") Long idUser) {
-        if (userStorage.containsUserById(idUser)) {
+//    public Optional<User> userById(@Valid @PathVariable("id") Long idUser) {
+    public Optional<User> userById(@PathVariable("id") Long idUser) {
+//        if (userStorage.containsUserById(idUser)) {
             return userStorage.getUserById(idUser);
-        } else {
-            throw new NotFoundObjectException("Нет такого пользователя c ID " + idUser);
-        }
+//        } else {
+//            throw new NotFoundObjectException("Нет такого пользователя c ID " + idUser);
+//        }
     }
 
     /**

@@ -35,19 +35,19 @@ public class UserService {
     public User addFriend(Long idUser, Long idFriend) {
         if (userStorage.containsUserById(idUser)) {
             if (userStorage.containsUserById(idFriend)) {
-                if (userStorage.getUserById(idUser).getListIdOfFriends() == null) {   //Добавление друга пользователю в друзья
+                if (userStorage.getUserById(idUser).get().getListIdOfFriends() == null) {   //Добавление друга пользователю в друзья
                     Set<Long> setIdUser = new HashSet<>();
                     setIdUser.add(idFriend);
-                    userStorage.getUserById(idUser).setListIdOfFriends(setIdUser);
+                    userStorage.getUserById(idUser).get().setListIdOfFriends(setIdUser);
                 } else {
-                    userStorage.getUserById(idUser).getListIdOfFriends().add(idFriend);
+                    userStorage.getUserById(idUser).get().getListIdOfFriends().add(idFriend);
                 }
-                if (userStorage.getUserById(idFriend).getListIdOfFriends() == null) {  //добавление пользователя другу в друзья
+                if (userStorage.getUserById(idFriend).get().getListIdOfFriends() == null) {  //добавление пользователя другу в друзья
                     Set<Long> setIdFriend = new HashSet<>();
                     setIdFriend.add(idUser);
-                    userStorage.getUserById(idFriend).setListIdOfFriends(setIdFriend);
+                    userStorage.getUserById(idFriend).get().setListIdOfFriends(setIdFriend);
                 } else {
-                    userStorage.getUserById(idFriend).getListIdOfFriends().add(idUser);
+                    userStorage.getUserById(idFriend).get().getListIdOfFriends().add(idUser);
                 }
             } else {
                 throw new NotFoundObjectException("Друг с таким id не существует");
@@ -55,7 +55,7 @@ public class UserService {
         } else {
             throw new NotFoundObjectException("Пользователь с таким id не существует");
         }
-        return userStorage.getUserById(idUser);
+        return userStorage.getUserById(idUser).get();
     }
 
     /**
@@ -69,15 +69,15 @@ public class UserService {
     public User deleteFriend(Long idUser, Long idFriend) {
         if (userStorage.containsUserById(idUser)) {
             if (userStorage.containsUserById(idFriend)) {
-                userStorage.getUserById(idUser).getListIdOfFriends().remove(idFriend);
-                userStorage.getUserById(idFriend).getListIdOfFriends().remove(idUser);
+                userStorage.getUserById(idUser).get().getListIdOfFriends().remove(idFriend);
+                userStorage.getUserById(idFriend).get().getListIdOfFriends().remove(idUser);
             } else {
                 throw new NotFoundObjectException("Друг с таким id не существует");
             }
         } else {
             throw new NotFoundObjectException("Пользователь с таким id не существует");
         }
-        return userStorage.getUserById(idUser);
+        return userStorage.getUserById(idUser).get();
     }
 
     /**
@@ -90,10 +90,10 @@ public class UserService {
     public List<User> getFriendsOfUser(Long idUser) {
         ArrayList<User> listOfFriends = new ArrayList<>();
         if (userStorage.containsUserById(idUser)) {
-            Set<Long> idOfFriends = userStorage.getUserById(idUser).getListIdOfFriends();
+            Set<Long> idOfFriends = userStorage.getUserById(idUser).get().getListIdOfFriends();
             for (Long idOfFriend : idOfFriends) {
                 if (userStorage.containsUserById(idOfFriend)) {
-                    listOfFriends.add(userStorage.getUserById(idOfFriend));
+                    listOfFriends.add(userStorage.getUserById(idOfFriend).get());
                 }
             }
             return listOfFriends;
@@ -114,14 +114,14 @@ public class UserService {
         ArrayList<User> mutualListFriends = new ArrayList<>();
         if (userStorage.containsUserById(id)) {
             if (userStorage.containsUserById(idOther)) {
-                Set<Long> idOfFirst = userStorage.getUserById(id).getListIdOfFriends();
-                Set<Long> idOfSecond = userStorage.getUserById(idOther).getListIdOfFriends();
+                Set<Long> idOfFirst = userStorage.getUserById(id).get().getListIdOfFriends();
+                Set<Long> idOfSecond = userStorage.getUserById(idOther).get().getListIdOfFriends();
                 if (idOfFirst != null && idOfSecond != null) {
                     Set<Long> idOfMutualFriends = new HashSet<>(idOfFirst);
                     idOfMutualFriends.retainAll(idOfSecond);                //получение общих друзей по их спискам
                     for (Long idOfMutualFriend : idOfMutualFriends) {
                         if (userStorage.containsUserById(idOfMutualFriend)) {
-                            mutualListFriends.add(userStorage.getUserById(idOfMutualFriend));
+                            mutualListFriends.add(userStorage.getUserById(idOfMutualFriend).get());
                         } else {
                             throw new NotFoundObjectException("Нет такого пользователя в списке");
                         }

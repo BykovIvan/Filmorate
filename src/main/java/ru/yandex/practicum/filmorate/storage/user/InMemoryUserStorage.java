@@ -3,45 +3,42 @@ package ru.yandex.practicum.filmorate.storage.user;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Класс отвечает за хранение, обновление, удаление и поиск пользователей
  * The class is responsible for storing, updating, deleting and searching for users
  */
 
-@Component
+//@Component
 public class InMemoryUserStorage implements UserStorage {
 
     private final Map<Long, User> mapUsers = new HashMap<>();
 
     @Override
-    public User create(Long idUser, User user) {
-        if (mapUsers.containsKey(idUser)) {
-            return null;
+    public Optional<User> create(User user) {
+        if (mapUsers.containsKey(user.getId())) {
+            return Optional.empty();
         }
-        mapUsers.put(idUser, user);
-        return mapUsers.get(idUser);
+        mapUsers.put(user.getId(), user);
+        return Optional.of(mapUsers.get(user.getId()));
     }
 
     @Override
-    public User update(Long idUser, User user) {
-        if (mapUsers.containsKey(idUser)) {
-            mapUsers.put(idUser, user);
-            return mapUsers.get(idUser);
+    public Optional<User> update(User user) {
+        if (mapUsers.containsKey(user.getId())) {
+            mapUsers.put(user.getId(), user);
+            return Optional.of(mapUsers.get(user.getId()));
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
-    public User getUserById(Long idUser) {
+    public Optional<User> getUserById(Long idUser) {
         if (mapUsers.containsKey(idUser)) {
-            return mapUsers.get(idUser);
+            return Optional.of(mapUsers.get(idUser));
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
