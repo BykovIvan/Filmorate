@@ -34,16 +34,16 @@ public class FilmService {
      * @param idUser
      * @return
      */
-    public Film addLikeFilm(Long idFilm, Long idUser) {
+    public Optional<Film> addLikeFilm(Long idFilm, Long idUser) {
         if (filmStorage.containsFilmById(idFilm)) {
-            if (filmStorage.getFilmById(idFilm).getLikesFromUsers() == null) {
+            if (filmStorage.getFilmById(idFilm).get().getLikesFromUsers() == null) {
                 Set<Long> setForLikes = new HashSet<>();
                 setForLikes.add(idUser);
-                filmStorage.getFilmById(idFilm).setLikesFromUsers(setForLikes);
-                filmStorage.getFilmById(idFilm).setRate(filmStorage.getFilmById(idFilm).getRate() + 1);
-            } else if (!(filmStorage.getFilmById(idFilm).getLikesFromUsers().contains(idUser))) {
-                filmStorage.getFilmById(idFilm).getLikesFromUsers().add(idUser);
-                filmStorage.getFilmById(idFilm).setRate(filmStorage.getFilmById(idFilm).getRate() + 1);
+                filmStorage.getFilmById(idFilm).get().setLikesFromUsers(setForLikes);
+                filmStorage.getFilmById(idFilm).get().setRate(filmStorage.getFilmById(idFilm).get().getRate() + 1);
+            } else if (!(filmStorage.getFilmById(idFilm).get().getLikesFromUsers().contains(idUser))) {
+                filmStorage.getFilmById(idFilm).get().getLikesFromUsers().add(idUser);
+                filmStorage.getFilmById(idFilm).get().setRate(filmStorage.getFilmById(idFilm).get().getRate() + 1);
             } else {
                 throw new NotFoundObjectException("Такой пользователь уже ставил лайк данному фильму");
             }
@@ -61,13 +61,13 @@ public class FilmService {
      * @param idUser
      * @return
      */
-    public Film deleteLikeFilm(Long idFilm, Long idUser) {
+    public Optional<Film> deleteLikeFilm(Long idFilm, Long idUser) {
         if (filmStorage.containsFilmById(idFilm)) {
-            if (filmStorage.getFilmById(idFilm).getLikesFromUsers() != null &&
-                    filmStorage.getFilmById(idFilm).getLikesFromUsers().contains(idUser)) {
+            if (filmStorage.getFilmById(idFilm).get().getLikesFromUsers() != null &&
+                    filmStorage.getFilmById(idFilm).get().getLikesFromUsers().contains(idUser)) {
 
-                filmStorage.getFilmById(idFilm).getLikesFromUsers().remove(idUser);
-                filmStorage.getFilmById(idFilm).setRate(filmStorage.getFilmById(idFilm).getRate() - 1);
+                filmStorage.getFilmById(idFilm).get().getLikesFromUsers().remove(idUser);
+                filmStorage.getFilmById(idFilm).get().setRate(filmStorage.getFilmById(idFilm).get().getRate() - 1);
 
                 return filmStorage.getFilmById(idFilm);
             } else {

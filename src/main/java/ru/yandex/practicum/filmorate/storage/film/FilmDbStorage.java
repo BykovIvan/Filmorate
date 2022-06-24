@@ -5,8 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.sql.Date;
@@ -27,7 +30,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Optional<Film> create(Film film) {
-        String insertSql = "INSERT INTO users (name, releaseDate, description, duration, rate, mpa) VALUES (?,?,?,?,?,?)";
+        String insertSql = "INSERT INTO films (name, releaseDate, description, duration, rate, mpa) VALUES (?,?,?,?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(insertSql, new String[] { "ID" });
@@ -36,7 +39,7 @@ public class FilmDbStorage implements FilmStorage {
             ps.setString(3, film.getDescription());
             ps.setInt(4, film.getDuration());
             ps.setInt(5, film.getRate());
-            ps.setArray(5, film.get());
+            ps.setInt(6, film.getMpa().getId());
             return ps;
         }, keyHolder);
         film.setId(keyHolder.getKey().longValue());
@@ -51,7 +54,23 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Optional<Film> getFilmById(Long idFilm) {
-        return Optional.empty();
+        SqlRowSet filmRows = jdbcTemplate.queryForRowSet( "select * from films where id = ?", idFilm);
+        if (filmRows.next()){
+            log.info("Найден пользователь: {}", filmRows.getString("name"));
+            Film film = Film.builder()
+                    .id(idFilm)
+                    .name(filmRows.getString("name"))
+                    .releaseDate(filmRows.getDate("releaseDate").toLocalDate())
+                    .description(filmRows.getString("description"))
+                    .duration(filmRows.getInt("duration"))
+                    .rate(filmRows.getInt("rate"))
+                    .mpa(filmRows.getObject("mpa", Mpa.class))
+                    .build();
+            return Optional.of(film);
+        } else {
+            log.info("Фильм с идентификатором {} не найден.", idFilm);
+            return Optional.empty();
+        }
     }
 
     @Override

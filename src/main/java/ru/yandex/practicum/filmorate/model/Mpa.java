@@ -1,17 +1,17 @@
 package ru.yandex.practicum.filmorate.model;
 
 public class Mpa {
-    private int mpaId;
+    private int id;
 
-    public Mpa(int mpaId) {
-        this.mpaId = mpaId;
+    public Mpa(int id) {
+        this.id = id;
     }
 
-    public int getMpaId() {
-        return mpaId;
+    public int getId() {
+        return id;
     }
 
-    public void setMpaId(int mpaId) {
-        this.mpaId = mpaId;
+    public void setId(int id) {
+        this.id = id;
     }
 }

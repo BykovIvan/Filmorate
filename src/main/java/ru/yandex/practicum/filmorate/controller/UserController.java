@@ -21,8 +21,6 @@ public class UserController {
     private final UserService userService;
     private final UserStorage userStorage;
 
-//    private Long count = 1L;        //Счетчик для Id
-
     public UserController(UserService userService, UserStorage userStorage) {
         this.userService = userService;
         this.userStorage = userStorage;

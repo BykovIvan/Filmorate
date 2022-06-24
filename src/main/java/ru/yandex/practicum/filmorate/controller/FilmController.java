@@ -18,7 +18,6 @@ import java.util.Optional;
 @RequestMapping("/films")
 public class FilmController {
 
-//    private Long count = 1L;            //Счетчик для id
     private final LocalDate startFilmDate = LocalDate.of(1895, 12, 28); //Дата начала кинопроизводства
 
     private final FilmService filmService;
@@ -39,7 +38,7 @@ public class FilmController {
     @PostMapping
     public Optional<Film> create(@Valid @RequestBody Film film) {
         log.info("Получен запрос к эндпоинту /films. Метод POST");
-        checkFilm(film, true);
+   //     checkFilm(film, true);
         return filmStorage.create(film);
 
 //        if (filmStorage.create(film).isPresent() || film.getId() < 0) {
@@ -60,7 +59,7 @@ public class FilmController {
     @PutMapping
     public Optional<Film> update(@Valid @RequestBody Film film) {
         log.info("Получен запрос к эндпоинту /films. Метод PUT");
-        checkFilm(film, false);
+   //     checkFilm(film, false);
         if (filmStorage.update(film).isPresent() && film.getId() > 0) {
             return filmStorage.getFilmById(film.getId());
         } else {
@@ -104,7 +103,7 @@ public class FilmController {
      * @return
      */
     @PutMapping("{id}/like/{userId}")
-    public Film addLikeFilm(@Valid @PathVariable("id") Long idFilm, @Valid @PathVariable("userId") Long idUser) {
+    public Optional<Film> addLikeFilm(@Valid @PathVariable("id") Long idFilm, @Valid @PathVariable("userId") Long idUser) {
         return filmService.addLikeFilm(idFilm, idUser);
     }
 
@@ -117,7 +116,7 @@ public class FilmController {
      * @return
      */
     @DeleteMapping("{id}/like/{userId}")
-    public Film deleteLikeFilm(@Valid @PathVariable("id") Long idFilm, @Valid @PathVariable("userId") Long idUser) {
+    public Optional<Film> deleteLikeFilm(@Valid @PathVariable("id") Long idFilm, @Valid @PathVariable("userId") Long idUser) {
         return filmService.deleteLikeFilm(idFilm, idUser);
     }
 

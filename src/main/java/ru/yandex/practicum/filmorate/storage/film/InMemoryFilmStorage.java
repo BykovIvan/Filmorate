@@ -10,7 +10,7 @@ import java.util.*;
  * The class is responsible for storing, updating, deleting and searching for movies
  */
 
-@Component
+//@Component
 public class InMemoryFilmStorage implements FilmStorage {
 
     private final Map<Long, Film> mapFilms = new HashMap<>();
