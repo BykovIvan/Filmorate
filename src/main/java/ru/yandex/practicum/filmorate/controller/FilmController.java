@@ -11,13 +11,14 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @Slf4j
 @RequestMapping("/films")
 public class FilmController {
 
-    private Long count = 1L;            //Счетчик для id
+//    private Long count = 1L;            //Счетчик для id
     private final LocalDate startFilmDate = LocalDate.of(1895, 12, 28); //Дата начала кинопроизводства
 
     private final FilmService filmService;
@@ -36,15 +37,17 @@ public class FilmController {
      * @return
      */
     @PostMapping
-    public Film create(@Valid @RequestBody Film film) {
+    public Optional<Film> create(@Valid @RequestBody Film film) {
         log.info("Получен запрос к эндпоинту /films. Метод POST");
         checkFilm(film, true);
-        if (filmStorage.create(count, film) != null || film.getId() < 0) {
-            film.setId(count);
-            return filmStorage.getFilmById(count++);
-        } else {
-            throw new NotFoundObjectException("Такой фильм уже есть в списке или id отрицательный");
-        }
+        return filmStorage.create(film);
+
+//        if (filmStorage.create(film).isPresent() || film.getId() < 0) {
+//            film.setId(count);
+//            return filmStorage.getFilmById(count++);
+//        } else {
+//            throw new NotFoundObjectException("Такой фильм уже есть в списке или id отрицательный");
+//        }
     }
 
     /**
@@ -55,10 +58,10 @@ public class FilmController {
      * @return
      */
     @PutMapping
-    public Film update(@Valid @RequestBody Film film) {
+    public Optional<Film> update(@Valid @RequestBody Film film) {
         log.info("Получен запрос к эндпоинту /films. Метод PUT");
         checkFilm(film, false);
-        if (filmStorage.update(film.getId(), film) != null && film.getId() > 0) {
+        if (filmStorage.update(film).isPresent() && film.getId() > 0) {
             return filmStorage.getFilmById(film.getId());
         } else {
             throw new NotFoundObjectException("Такой фильм не добавлен или id отрицательный");
@@ -84,7 +87,7 @@ public class FilmController {
      * @return
      */
     @GetMapping("/{id}")
-    public Film filmById(@Valid @PathVariable("id") Long idFilm) {
+    public Optional<Film> filmById(@Valid @PathVariable("id") Long idFilm) {
         if (filmStorage.containsFilmById(idFilm)) {
             return filmStorage.getFilmById(idFilm);
         } else {

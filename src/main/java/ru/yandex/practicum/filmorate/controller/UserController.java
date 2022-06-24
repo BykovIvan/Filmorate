@@ -38,9 +38,8 @@ public class UserController {
     @PostMapping
     public Optional<User> create(@Valid @RequestBody User user) {
         log.info("Получен запрос к эндпоинту /users. Метод POST");
-        checkUser(user, true); // Пока нет всего функционала закомичен
+        checkUser(user, true);
         return userStorage.create(user);
-
 //        if (userStorage.create(count, user) != null) {
 //            user.setId(count);
 //            return userStorage.getUserById(count++);

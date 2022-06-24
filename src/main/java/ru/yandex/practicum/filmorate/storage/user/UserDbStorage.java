@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,7 +24,6 @@ public class UserDbStorage implements UserStorage {
 
     private final Logger log = LoggerFactory.getLogger(UserDbStorage.class);
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final JdbcTemplate jdbcTemplate;
 
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
@@ -39,24 +39,20 @@ public class UserDbStorage implements UserStorage {
             ps.setString(1, user.getEmail());
             ps.setString(2, user.getLogin());
             ps.setString(3, user.getName());
-            ps.setString(4, user.getBirthday().format(formatter));
+            ps.setDate(4, Date.valueOf(user.getBirthday()));
             return ps;
         }, keyHolder);
         user.setId(keyHolder.getKey().longValue());
+        log.info("Найден создан: {} {}", user.getId(), user.getName());
         return Optional.of(user);
-
-//        int userid =  jdbcTemplate.update(
-//                "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)",
-//                user.getEmail(), user.getLogin(), user.getName(), user.getBirthday().format(formatter)
-//        );
-//        return Optional.of(user);
     }
 
     @Override
     public Optional<User> update(User user) {
         jdbcTemplate.update(
                 "UPDATE users SET EMAIL = ?, LOGIN = ?, NAME = ?, BIRTHDAY = ?" +
-                        "WHERE id = ? ", user.getEmail(), user.getLogin(), user.getName(), user.getBirthday().format(formatter), user.getId());
+                        "WHERE id = ? ", user.getEmail(), user.getLogin(), user.getName(), Date.valueOf(user.getBirthday()), user.getId());
+        log.info("Обнавлен пользователь {} {}", user.getId(), user.getName());
         return Optional.of(user);
     }
 
@@ -65,14 +61,12 @@ public class UserDbStorage implements UserStorage {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet( "select * from users where id = ?", idUser);
         if (userRows.next()){
             log.info("Найден пользователь: {} {}", userRows.getString("email"), userRows.getString("name"));
-            String strDate = userRows.getString("birthday");
-//            LocalDate date = LocalDate.parse(strDate, formatter);
             User user = User.builder()
                     .id(idUser)
                     .email(userRows.getString("email"))
                     .login(userRows.getString("login"))
                     .name(userRows.getString("name"))
-                    .birthday(LocalDate.parse(strDate, formatter))
+                    .birthday(userRows.getDate("birthday").toLocalDate())
                     .build();
             return Optional.of(user);
         } else {
@@ -84,6 +78,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public List<User> getAllUsers() {
         String sql = "SELECT * FROM USERS";
+        log.info("Запрос на получение всех пользователей.");
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs));
 
     }
@@ -94,14 +89,14 @@ public class UserDbStorage implements UserStorage {
                 .email(rs.getString("email"))
                 .login(rs.getString("login"))
                 .name(rs.getString("name"))
-                .birthday(LocalDate.parse(rs.getString("birthday"), formatter))
+                .birthday(rs.getDate("birthday").toLocalDate())
                 .build();
 
     }
 
     @Override
     public boolean deleteUserById(Long idUser) {
-        log.info("Deleting existing user with id = " + idUser);
+        log.info("Пользователь с идентификатором {} удален.", idUser);
         String sql = "DELETE FROM USERS WHERE id = ?";
         Object[] args = new Object[] {idUser};
         return jdbcTemplate.update(sql, args) == 1;

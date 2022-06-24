@@ -3,10 +3,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Класс отвечает за хранение, обновление, удаление и поиск фильмов
@@ -19,29 +16,29 @@ public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Long, Film> mapFilms = new HashMap<>();
 
     @Override
-    public Film create(Long idFilm, Film film) {
-        if (mapFilms.containsKey(idFilm)) {
-            return null;
+    public Optional<Film> create(Film film) {
+        if (mapFilms.containsKey(film.getId())) {
+            return Optional.empty();
         }
-        mapFilms.put(idFilm, film);
-        return mapFilms.get(idFilm);
+        mapFilms.put(film.getId(), film);
+        return Optional.of(mapFilms.get(film.getId()));
     }
 
     @Override
-    public Film update(Long idFilm, Film film) {
-        if (mapFilms.containsKey(idFilm)) {
-            mapFilms.put(idFilm, film);
-            return mapFilms.get(idFilm);
+    public Optional<Film> update(Film film) {
+        if (mapFilms.containsKey(film.getId())) {
+            mapFilms.put(film.getId(), film);
+            return Optional.of(mapFilms.get(film.getId()));
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
-    public Film getFilmById(Long idFilm) {
+    public Optional<Film> getFilmById(Long idFilm) {
         if (mapFilms.containsKey(idFilm)) {
-            return mapFilms.get(idFilm);
+            return Optional.of(mapFilms.get(idFilm));
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override

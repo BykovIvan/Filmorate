@@ -4,6 +4,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FilmStorage {
     /**
@@ -13,7 +14,7 @@ public interface FilmStorage {
      * @param film
      * @return
      */
-    Film create(Long idFilm, Film film);
+    Optional<Film> create(Film film);
 
     /**
      * Обновление фильма в локальном хранилище
@@ -22,7 +23,7 @@ public interface FilmStorage {
      * @param film
      * @return
      */
-    Film update(Long idFilm, Film film);
+    Optional<Film> update(Film film);
 
     /**
      * Поиск фильма по Id
@@ -31,7 +32,7 @@ public interface FilmStorage {
      * @param idFilm
      * @return
      */
-    Film getFilmById(Long idFilm);
+    Optional<Film> getFilmById(Long idFilm);
 
     /**
      * Получение всех фильмов из хранилища
