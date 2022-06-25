@@ -24,6 +24,6 @@ public class User {
     private String login;               //Логин пользователя
     private String name;                //Имя пользователя
     private LocalDate birthday;         //Дата рождения
-    private Set<Long> listIdOfFriends;        //Спискок ид друзей
+//    private Set<Long> listIdOfFriends;        //Спискок ид друзей
 
 }

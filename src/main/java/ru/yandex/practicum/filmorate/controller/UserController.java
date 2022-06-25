@@ -96,9 +96,10 @@ public class UserController {
      * @return
      */
     @PutMapping("/{id}/friends/{friendId}")
-    public User addFriend(@Valid @PathVariable("id") Long idUser, @PathVariable("friendId") Long idFriend) {
-        log.info("Получен запрос к эндпоинту /users. Метод PUT");
-        return userService.addFriend(idUser, idFriend);
+    public void addFriend(@Valid @PathVariable("id") Long idUser, @PathVariable("friendId") Long idFriend) {
+        log.info("Получен запрос к эндпоинту добавления в друзья /users. Метод PUT");
+        userService.addFriend(idUser, idFriend);
+//        return userService.addFriend(idUser, idFriend);
     }
 
     /**
@@ -111,8 +112,9 @@ public class UserController {
      * @return
      */
     @DeleteMapping("/{id}/friends/{friendId}")
-    public User deleteFriend(@Valid @PathVariable("id") Long idUser, @PathVariable("friendId") Long idFriend) {
-        return userService.deleteFriend(idUser, idFriend);
+    public void deleteFriend(@Valid @PathVariable("id") Long idUser, @PathVariable("friendId") Long idFriend) {
+        userService.deleteFriend(idUser, idFriend);
+//        return userService.deleteFriend(idUser, idFriend);
     }
 
     /**
