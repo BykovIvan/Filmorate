@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.FriendDao;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundObjectException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -19,9 +20,11 @@ import java.util.*;
 public class UserService {
 
     private final UserStorage userStorage;
+    private final FriendDao friendDao;
 
-    public UserService(UserStorage userStorage) {
+    public UserService(UserStorage userStorage, FriendDao friendDao) {
         this.userStorage = userStorage;
+        this.friendDao = friendDao;
     }
 
     /**

@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundObjectException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
@@ -38,15 +39,9 @@ public class FilmController {
     @PostMapping
     public Optional<Film> create(@Valid @RequestBody Film film) {
         log.info("Получен запрос к эндпоинту /films. Метод POST");
-   //     checkFilm(film, true);
+        checkFilm(film, true);
         return filmStorage.create(film);
 
-//        if (filmStorage.create(film).isPresent() || film.getId() < 0) {
-//            film.setId(count);
-//            return filmStorage.getFilmById(count++);
-//        } else {
-//            throw new NotFoundObjectException("Такой фильм уже есть в списке или id отрицательный");
-//        }
     }
 
     /**
@@ -59,9 +54,9 @@ public class FilmController {
     @PutMapping
     public Optional<Film> update(@Valid @RequestBody Film film) {
         log.info("Получен запрос к эндпоинту /films. Метод PUT");
-   //     checkFilm(film, false);
-        if (filmStorage.update(film).isPresent() && film.getId() > 0) {
-            return filmStorage.getFilmById(film.getId());
+        checkFilm(film, false);
+        if (film.getId() > 0) {
+            return filmStorage.update(film);
         } else {
             throw new NotFoundObjectException("Такой фильм не добавлен или id отрицательный");
         }
@@ -90,7 +85,7 @@ public class FilmController {
         if (filmStorage.containsFilmById(idFilm)) {
             return filmStorage.getFilmById(idFilm);
         } else {
-            throw new NotFoundObjectException("Нет такого пользователя c ID " + idFilm);
+            throw new NotFoundObjectException("Нет такого фильма c ID " + idFilm);
         }
     }
 

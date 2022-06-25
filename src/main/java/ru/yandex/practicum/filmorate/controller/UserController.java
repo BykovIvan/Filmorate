@@ -38,12 +38,7 @@ public class UserController {
         log.info("Получен запрос к эндпоинту /users. Метод POST");
         checkUser(user, true);
         return userStorage.create(user);
-//        if (userStorage.create(count, user) != null) {
-//            user.setId(count);
-//            return userStorage.getUserById(count++);
-//        } else {
-//            throw new ValidationException("Такой пользователь уже существует");
-//        }
+
     }
 
     /**
@@ -57,8 +52,8 @@ public class UserController {
     public Optional<User> update(@Valid @RequestBody User user) {
         log.info("Получен запрос к эндпоинту /users. Метод PUT");
         checkUser(user, false);
-        if (userStorage.update(user).isPresent() && user.getId() > 0) {
-            return userStorage.getUserById(user.getId());
+        if (user.getId() > 0) {
+            return userStorage.update(user);
         } else {
             throw new NotFoundObjectException("Такого пользователя не существует");
         }
@@ -83,13 +78,12 @@ public class UserController {
      * @return
      */
     @GetMapping("/{id}")
-//    public Optional<User> userById(@Valid @PathVariable("id") Long idUser) {
-    public Optional<User> userById(@PathVariable("id") Long idUser) {
-//        if (userStorage.containsUserById(idUser)) {
+    public Optional<User> userById(@Valid @PathVariable("id") Long idUser) {
+        if (userStorage.containsUserById(idUser)) {
             return userStorage.getUserById(idUser);
-//        } else {
-//            throw new NotFoundObjectException("Нет такого пользователя c ID " + idUser);
-//        }
+        } else {
+            throw new NotFoundObjectException("Нет такого пользователя c ID " + idUser);
+        }
     }
 
     /**

@@ -22,6 +22,6 @@ public class Film {
     private int duration;                   //Продолжительность фильма
     private int rate;
     private Set<Long> likesFromUsers;  //Список пользователей кто поставил лайк фильму и их количество у каждого фильма
-    private Set<Genres> genres;
+    private Set<Genre> genres;
     private Mpa mpa;
 }

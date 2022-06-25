@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
@@ -14,10 +15,13 @@ import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
 @Component
+@Repository
 public class FilmDbStorage implements FilmStorage {
 
     private final Logger log = LoggerFactory.getLogger(UserDbStorage.class);
@@ -28,9 +32,10 @@ public class FilmDbStorage implements FilmStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+
     @Override
     public Optional<Film> create(Film film) {
-        String insertSql = "INSERT INTO films (name, releaseDate, description, duration, rate, mpa) VALUES (?,?,?,?,?,?)";
+        String insertSql = "INSERT INTO films (name, release_data, description, duration, rate, mpa) VALUES (?,?,?,?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(insertSql, new String[] { "ID" });
@@ -39,17 +44,27 @@ public class FilmDbStorage implements FilmStorage {
             ps.setString(3, film.getDescription());
             ps.setInt(4, film.getDuration());
             ps.setInt(5, film.getRate());
-            ps.setInt(6, film.getMpa().getId());
+            ps.setLong(6, film.getMpa().getId());
             return ps;
         }, keyHolder);
         film.setId(keyHolder.getKey().longValue());
-        log.info("Cоздан фильм : {} {}", film.getId(), film.getName());
+        log.info("Фильм создан: {} {}", film.getId(), film.getName());
         return Optional.of(film);
     }
 
     @Override
     public Optional<Film> update(Film film) {
-        return Optional.empty();
+        jdbcTemplate.update(
+"UPDATE films SET name = ?, release_data = ?, description = ?, duration = ?, rate = ?, mpa = ?" +
+       "WHERE id = ? ", film.getName(),
+                                Date.valueOf(film.getReleaseDate()),
+                                film.getDescription(),
+                                film.getDuration(),
+                                film.getRate(),
+                                film.getMpa().getId(),
+                                film.getId());
+        log.info("Обнавлен фильм {} {}", film.getId(), film.getName());
+        return Optional.of(film);
     }
 
     @Override
@@ -60,11 +75,14 @@ public class FilmDbStorage implements FilmStorage {
             Film film = Film.builder()
                     .id(idFilm)
                     .name(filmRows.getString("name"))
-                    .releaseDate(filmRows.getDate("releaseDate").toLocalDate())
+                    .releaseDate(filmRows.getDate("release_data").toLocalDate())
                     .description(filmRows.getString("description"))
                     .duration(filmRows.getInt("duration"))
                     .rate(filmRows.getInt("rate"))
-                    .mpa(filmRows.getObject("mpa", Mpa.class))
+//                    .mpa(new Mpa(filmRows.getInt("mpa")))
+                    .mpa(Mpa.builder()
+                            .id(filmRows.getLong("mpa"))
+                            .build())
                     .build();
             return Optional.of(film);
         } else {
@@ -75,12 +93,34 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getAllFilms() {
-        return null;
+        String sql = "SELECT * FROM films";
+        log.info("Запрос на получение всех фильмов.");
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs));
+
+    }
+
+    private Film makeFilm(ResultSet rs) throws SQLException {
+        return Film.builder()
+                .id(rs.getLong("id"))
+                .name(rs.getString("name"))
+                .releaseDate(rs.getDate("release_data").toLocalDate())
+                .description(rs.getString("description"))
+                .duration(rs.getInt("duration"))
+                .rate(rs.getInt("rate"))
+//                .mpa(new Mpa(rs.getInt("mpa")))
+                .mpa(Mpa.builder()
+                        .id(rs.getLong("mpa"))
+                        .build())
+                .build();
+
     }
 
     @Override
     public boolean deleteFilmById(Long idFilm) {
-        return false;
+        log.info("Фильм с идентификатором {} удален.", idFilm);
+        String sql = "DELETE FROM films WHERE id = ?";
+        Object[] args = new Object[] {idFilm};
+        return jdbcTemplate.update(sql, args) == 1;
     }
 
     @Override
@@ -90,6 +130,11 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public boolean containsFilmById(Long idFilm) {
-        return false;
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet( "select * from films where id = ?", idFilm);
+        if (userRows.next()){
+            return true;
+        } else {
+            return false;
+        }
     }
 }

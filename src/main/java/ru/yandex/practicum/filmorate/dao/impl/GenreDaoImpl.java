@@ -6,9 +6,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.dao.MpaDao;
+import ru.yandex.practicum.filmorate.dao.GenreDao;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,49 +16,47 @@ import java.util.Optional;
 
 @Component
 @Repository
-public class MpaDaoImpl implements MpaDao {
-
+public class GenreDaoImpl implements GenreDao {
     private final Logger log = LoggerFactory.getLogger(MpaDaoImpl.class);
     private final JdbcTemplate jdbcTemplate;
 
-    public MpaDaoImpl(JdbcTemplate jdbcTemplate){
-        this.jdbcTemplate=jdbcTemplate;
+    public GenreDaoImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-
     @Override
-    public Optional<Mpa> findMpaById(Long id) {
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("select * from MPA where id = ?", id);
+    public Optional<Genre> findGenreById(Long id) {
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet("select * from GENRE where id = ?", id);
         if(userRows.next()) {
-            log.info("Найден MPA: {}", id);
-            Mpa mpa = Mpa.builder()
+            log.info("Найден GENRE: {}", id);
+            Genre genre = Genre.builder()
                     .id(id)
                     .name(userRows.getString("name"))
                     .build();
-            return Optional.of(mpa);
+            return Optional.of(genre);
         } else {
-            log.info("MPA с идентификатором {} не найден.", id);
+            log.info("GENRE с идентификатором {} не найден.", id);
             return Optional.empty();
         }
     }
 
     @Override
-    public List<Mpa> findAllMpa() {
-        String sql = "SELECT * FROM mpa";
-        log.info("Запрос на получение всех mpa.");
-        return jdbcTemplate.query(sql, (rs, rowNum) -> makeMpa(rs));
+    public List<Genre> findAllGenre() {
+        String sql = "SELECT * FROM genre";
+        log.info("Запрос на получение всех жанров.");
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs));
     }
 
-    private Mpa makeMpa(ResultSet rs) throws SQLException {
-        return Mpa.builder()
+    private Genre makeGenre(ResultSet rs) throws SQLException {
+        return Genre.builder()
                 .id(rs.getLong("id"))
                 .name(rs.getString("name"))
                 .build();
     }
 
     @Override
-    public boolean containsMpaById(Long idMpa) {
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet( "select * from mpa where id = ?", idMpa);
+    public boolean containsGenreById(Long idGenre) {
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet( "select * from genre where id = ?", idGenre);
         if (userRows.next()){
             return true;
         } else {
