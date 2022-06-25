@@ -36,6 +36,10 @@ public class UserService {
      * @return
      */
     public User addFriend(Long idUser, Long idFriend) {
+
+
+
+
         if (userStorage.containsUserById(idUser)) {
             if (userStorage.containsUserById(idFriend)) {
                 if (userStorage.getUserById(idUser).get().getListIdOfFriends() == null) {   //Добавление друга пользователю в друзья
