@@ -43,32 +43,33 @@ public class FriendDaoImpl implements FriendDao {
     }
 
     @Override
-    public boolean checkFriend(Long id, Long friendId) {
+    public boolean checkFriend(Long friendId, Long id) {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet("select confirmed from friends " +
-                "where user_id = ? and friend_id = ?", id, friendId);
+                "where user_id = ? and friend_id = ?", friendId, id);
         if(userRows.next()) {
-            log.info("Найден пользователь с : {}", id);
-            return userRows.getBoolean("confirmed");
+            log.info("Найдена дружба с : {}", id);
+            return true;
         } else {
-            throw new NotFoundObjectException("Нет такого пользователя c ID " + id);
+            return false;
         }
 
     }
 
     @Override
-    public boolean deleteFriend(Long id, Long friendId) {
+    public void deleteFriend(Long id, Long friendId) {
         log.info("Дружба удалена с идентификатором {} {} удалена", id, friendId);
         String sql = "DELETE FROM friends WHERE user_id = ? AND friend_id = ?";
         Object[] args = new Object[] {id, friendId};
-        return jdbcTemplate.update(sql, args) == 1;
+        jdbcTemplate.update(sql, args);
     }
 
     @Override
     public List<Friend> getAllFriends(Long id) {
-        String sql = "SELECT * FROM friends where id = "+ id;
+        String sql = "SELECT * FROM friends where user_id = " + id;
         log.info("Запрос на получение всех друзей.");
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeFriend(rs));
     }
+
     private Friend makeFriend(ResultSet rs) throws SQLException {
         return Friend.builder()
                 .userId(rs.getLong("user_id"))

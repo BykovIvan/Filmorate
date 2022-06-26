@@ -39,41 +39,19 @@ public class UserService {
     public void addFriend(Long idUser, Long idFriend) {
         if (userStorage.containsUserById(idUser)) {
             if (userStorage.containsUserById(idFriend)) {
-//                if (friendDao.containsUserInTableById(idUser)){
+                if (friendDao.checkFriend(idFriend, idUser)){
+                    friendDao.changeStatusOnConfirmed(idFriend, idUser);
                     friendDao.addFriend(idUser, idFriend);
-//                }
+                    friendDao.changeStatusOnConfirmed(idUser, idFriend);
+                }else {
+                    friendDao.addFriend(idUser, idFriend);
+                }
             } else {
                 throw new NotFoundObjectException("Друг с таким id не существует");
             }
         }else {
             throw new NotFoundObjectException("Пользователь с таким id не существует");
         }
-
-
-//        if (userStorage.containsUserById(idUser)) {
-//            if (userStorage.containsUserById(idFriend)) {
-//                if (userStorage.getUserById(idUser).get().getListIdOfFriends() == null) {   //Добавление друга пользователю в друзья
-//                    Set<Long> setIdUser = new HashSet<>();
-//                    setIdUser.add(idFriend);
-////                    friendDao.addFriend(idUser, idFriend);
-//                    userStorage.getUserById(idUser).get().setListIdOfFriends(setIdUser);
-//                } else {
-//                    userStorage.getUserById(idUser).get().getListIdOfFriends().add(idFriend);
-//                }
-//                if (userStorage.getUserById(idFriend).get().getListIdOfFriends() == null) {  //добавление пользователя другу в друзья
-//                    Set<Long> setIdFriend = new HashSet<>();
-//                    setIdFriend.add(idUser);
-//                    userStorage.getUserById(idFriend).get().setListIdOfFriends(setIdFriend);
-//                } else {
-//                    userStorage.getUserById(idFriend).get().getListIdOfFriends().add(idUser);
-//                }
-//            } else {
-//                throw new NotFoundObjectException("Друг с таким id не существует");
-//            }
-//        } else {
-//            throw new NotFoundObjectException("Пользователь с таким id не существует");
-//        }
-//        return userStorage.getUserById(idUser).get();
     }
 
     /**
@@ -88,6 +66,9 @@ public class UserService {
         if (userStorage.containsUserById(idUser)) {
             if (userStorage.containsUserById(idFriend)) {
                 if (friendDao.containsUserInTableById(idUser)){
+                    if (friendDao.checkFriend(idFriend, idUser)){
+                        friendDao.changeStatusOnDelete(idFriend, idUser);
+                    }
                     friendDao.deleteFriend(idUser, idFriend);
                 }
             }else {
@@ -96,18 +77,6 @@ public class UserService {
         }else {
             throw new NotFoundObjectException("Пользователь с таким id не существует");
         }
-
-//        if (userStorage.containsUserById(idUser)) {
-//            if (userStorage.containsUserById(idFriend)) {
-//                userStorage.getUserById(idUser).get().getListIdOfFriends().remove(idFriend);
-//                userStorage.getUserById(idFriend).get().getListIdOfFriends().remove(idUser);
-//            } else {
-//                throw new NotFoundObjectException("Друг с таким id не существует");
-//            }
-//        } else {
-//            throw new NotFoundObjectException("Пользователь с таким id не существует");
-//        }
-//        return userStorage.getUserById(idUser).get();
     }
 
     /**
@@ -124,12 +93,6 @@ public class UserService {
             for (Friend friend : friendsById) {
                 listOfFriends.add(userStorage.getUserById(friend.getFriendId()).get());
             }
-//            Set<Long> idOfFriends = userStorage.getUserById(idUser).get().getListIdOfFriends();
-//            for (Long idOfFriend : idOfFriends) {
-//                if (userStorage.containsUserById(idOfFriend)) {
-//                    listOfFriends.add(userStorage.getUserById(idOfFriend).get());
-//                }
-//            }
             return listOfFriends;
         } else {
             throw new NotFoundObjectException("Нет такого пользователя");
@@ -148,25 +111,22 @@ public class UserService {
         ArrayList<User> mutualListFriends = new ArrayList<>();
         if (userStorage.containsUserById(id)) {
             if (userStorage.containsUserById(idOther)) {
-//                Set<Long> idOfFirst = userStorage.getUserById(id).get().getListIdOfFriends();
-//                Set<Long> idOfSecond = userStorage.getUserById(idOther).get().getListIdOfFriends();
-//                if (idOfFirst != null && idOfSecond != null) {
-//                    Set<Long> idOfMutualFriends = new HashSet<>(idOfFirst);
-//                    idOfMutualFriends.retainAll(idOfSecond);                //получение общих друзей по их спискам
-//                    for (Long idOfMutualFriend : idOfMutualFriends) {
-//                        if (userStorage.containsUserById(idOfMutualFriend)) {
-//                            mutualListFriends.add(userStorage.getUserById(idOfMutualFriend).get());
-//                        } else {
-//                            throw new NotFoundObjectException("Нет такого пользователя в списке");
-//                        }
-//                    }
-//                }
+                Set<Friend> idOfMutual1Friends = new HashSet<>(friendDao.getAllFriends(id));
+                Set<Friend> idOfMutual2Friends = new HashSet<>(friendDao.getAllFriends(idOther));
+                idOfMutual1Friends.retainAll(idOfMutual2Friends);
+                for (Friend idOfMutualFriend : idOfMutual1Friends) {
+                    if (userStorage.containsUserById(idOfMutualFriend.getFriendId())) {
+                        mutualListFriends.add(userStorage.getUserById(idOfMutualFriend.getFriendId()).get());
+                    } else {
+                        throw new NotFoundObjectException("Нет такого пользователя в списке");
+                    }
+                }
                 return mutualListFriends;
             } else {
-                throw new NotFoundObjectException("Нет такого пользователя 2");
+                throw new NotFoundObjectException("Нет такого пользователя " + idOther);
             }
         } else {
-            throw new NotFoundObjectException("Нет такого пользователя 1");
+            throw new NotFoundObjectException("Нет такого пользователя " + id);
         }
     }
 }
