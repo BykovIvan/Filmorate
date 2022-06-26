@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.FriendDao;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundObjectException;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Friend;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -39,13 +40,18 @@ public class UserService {
     public void addFriend(Long idUser, Long idFriend) {
         if (userStorage.containsUserById(idUser)) {
             if (userStorage.containsUserById(idFriend)) {
-                if (friendDao.checkFriend(idFriend, idUser)){
-                    friendDao.changeStatusOnConfirmed(idFriend, idUser);
-                    friendDao.addFriend(idUser, idFriend);
-                    friendDao.changeStatusOnConfirmed(idUser, idFriend);
+                if (!friendDao.checkFriend(idUser, idFriend)){
+                    if (friendDao.checkFriend(idFriend, idUser)){
+                        friendDao.changeStatusOnConfirmed(idFriend, idUser);
+                        friendDao.addFriend(idUser, idFriend);
+                        friendDao.changeStatusOnConfirmed(idUser, idFriend);
+                    }else {
+                        friendDao.addFriend(idUser, idFriend);
+                    }
                 }else {
-                    friendDao.addFriend(idUser, idFriend);
+                    throw new ValidationException("Дружба уже существует!");
                 }
+
             } else {
                 throw new NotFoundObjectException("Друг с таким id не существует");
             }
@@ -111,22 +117,32 @@ public class UserService {
         ArrayList<User> mutualListFriends = new ArrayList<>();
         if (userStorage.containsUserById(id)) {
             if (userStorage.containsUserById(idOther)) {
-                Set<Friend> idOfMutual1Friends = new HashSet<>(friendDao.getAllFriends(id));
-                Set<Friend> idOfMutual2Friends = new HashSet<>(friendDao.getAllFriends(idOther));
-                idOfMutual1Friends.retainAll(idOfMutual2Friends);
-                for (Friend idOfMutualFriend : idOfMutual1Friends) {
-                    if (userStorage.containsUserById(idOfMutualFriend.getFriendId())) {
-                        mutualListFriends.add(userStorage.getUserById(idOfMutualFriend.getFriendId()).get());
-                    } else {
-                        throw new NotFoundObjectException("Нет такого пользователя в списке");
+                Set<Long> idOfFirst = new HashSet<>();
+                Set<Long> idOfSecond = new HashSet<>();
+                for (Friend allFriend1 : friendDao.getAllFriends(id)) {
+                    idOfFirst.add(allFriend1.getFriendId());
+                }
+                for (Friend allFriend2 : friendDao.getAllFriends(idOther)) {
+                    idOfSecond.add(allFriend2.getFriendId());
+                }
+                if (!idOfFirst.isEmpty() && !idOfSecond.isEmpty()) {
+                    Set<Long> idOfMutualFriends = new HashSet<>(idOfFirst);
+                    idOfMutualFriends.retainAll(idOfSecond);                //получение общих друзей по их спискам
+                    for (Long idOfMutualFriend : idOfMutualFriends) {
+                        if (userStorage.containsUserById(idOfMutualFriend)) {
+                            mutualListFriends.add(userStorage.getUserById(idOfMutualFriend).get());
+                        } else {
+                            throw new NotFoundObjectException("Нет такого пользователя в списке");
+                        }
                     }
                 }
                 return mutualListFriends;
             } else {
-                throw new NotFoundObjectException("Нет такого пользователя " + idOther);
+                throw new NotFoundObjectException("Нет такого пользователя 2 " + idOther);
             }
         } else {
-            throw new NotFoundObjectException("Нет такого пользователя " + id);
+            throw new NotFoundObjectException("Нет такого пользователя 1 " + id);
         }
+
     }
 }

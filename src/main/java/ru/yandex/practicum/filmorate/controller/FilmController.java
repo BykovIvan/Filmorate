@@ -98,8 +98,8 @@ public class FilmController {
      * @return
      */
     @PutMapping("{id}/like/{userId}")
-    public Optional<Film> addLikeFilm(@Valid @PathVariable("id") Long idFilm, @Valid @PathVariable("userId") Long idUser) {
-        return filmService.addLikeFilm(idFilm, idUser);
+    public void addLikeFilm(@Valid @PathVariable("id") Long idFilm, @Valid @PathVariable("userId") Long idUser) {
+        filmService.addLikeFilm(idFilm, idUser);
     }
 
     /**
@@ -111,8 +111,8 @@ public class FilmController {
      * @return
      */
     @DeleteMapping("{id}/like/{userId}")
-    public Optional<Film> deleteLikeFilm(@Valid @PathVariable("id") Long idFilm, @Valid @PathVariable("userId") Long idUser) {
-        return filmService.deleteLikeFilm(idFilm, idUser);
+    public void deleteLikeFilm(@Valid @PathVariable("id") Long idFilm, @Valid @PathVariable("userId") Long idUser) {
+        filmService.deleteLikeFilm(idFilm, idUser);
     }
 
     /**

@@ -1,11 +1,13 @@
 package ru.yandex.practicum.filmorate.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -20,8 +22,9 @@ public class Film {
     private String description;             //Описание фильма
     private LocalDate releaseDate;          //Дата выхода фильма
     private int duration;                   //Продолжительность фильма
-    private int rate;
+    private Long rate;
+    @JsonIgnore
     private Set<Long> likesFromUsers;  //Список пользователей кто поставил лайк фильму и их количество у каждого фильма
-    private Set<Genre> genres;
+    private List<Genre> genres;
     private Mpa mpa;
 }

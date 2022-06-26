@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.dao.MpaDao;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
@@ -27,11 +28,12 @@ public class FilmDbStorage implements FilmStorage {
     private final Logger log = LoggerFactory.getLogger(UserDbStorage.class);
 
     private final JdbcTemplate jdbcTemplate;
+    private final MpaDao mpaDao;
 
-    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaDao mpaDao) {
         this.jdbcTemplate = jdbcTemplate;
+        this.mpaDao = mpaDao;
     }
-
 
     @Override
     public Optional<Film> create(Film film) {
@@ -43,7 +45,7 @@ public class FilmDbStorage implements FilmStorage {
             ps.setDate(2, Date.valueOf(film.getReleaseDate()));
             ps.setString(3, film.getDescription());
             ps.setInt(4, film.getDuration());
-            ps.setInt(5, film.getRate());
+            ps.setLong(5, film.getRate());
             ps.setLong(6, film.getMpa().getId());
             return ps;
         }, keyHolder);
@@ -78,10 +80,10 @@ public class FilmDbStorage implements FilmStorage {
                     .releaseDate(filmRows.getDate("release_data").toLocalDate())
                     .description(filmRows.getString("description"))
                     .duration(filmRows.getInt("duration"))
-                    .rate(filmRows.getInt("rate"))
-//                    .mpa(new Mpa(filmRows.getInt("mpa")))
+                    .rate(filmRows.getLong("rate"))
                     .mpa(Mpa.builder()
                             .id(filmRows.getLong("mpa"))
+                            .name(mpaDao.findMpaById(filmRows.getLong("mpa")).get().getName())
                             .build())
                     .build();
             return Optional.of(film);
@@ -106,10 +108,10 @@ public class FilmDbStorage implements FilmStorage {
                 .releaseDate(rs.getDate("release_data").toLocalDate())
                 .description(rs.getString("description"))
                 .duration(rs.getInt("duration"))
-                .rate(rs.getInt("rate"))
-//                .mpa(new Mpa(rs.getInt("mpa")))
+                .rate(rs.getLong("rate"))
                 .mpa(Mpa.builder()
                         .id(rs.getLong("mpa"))
+                        .name(mpaDao.findMpaById(rs.getLong("mpa")).get().getName())
                         .build())
                 .build();
 

@@ -3,21 +3,15 @@ package ru.yandex.practicum.filmorate.dao.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.FriendDao;
-import ru.yandex.practicum.filmorate.exceptions.NotFoundObjectException;
 import ru.yandex.practicum.filmorate.model.Friend;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
 
 @Component
@@ -33,12 +27,12 @@ public class FriendDaoImpl implements FriendDao {
 
     @Override
     public void addFriend(Long id, Long friendId) {
-        String insertQuery = "insert into friends (user_id, friend_id, confirmed) values (?, ?, ?)";
-        int status = jdbcTemplate.update(insertQuery, id, friendId, false);
+        String insertQuery = "insert into friends (user_id, friend_id) values (?, ?)";
+        int status = jdbcTemplate.update(insertQuery, id, friendId);
         if(status != 0){
-            System.out.println("Подал заявку: ID " + id);
+            log.info("Подал заявку: ID {}", id);
         }else{
-            System.out.println("Не подал заявку: ID " + id);
+            log.info("Не подал заявку: ID {}", id);
         }
     }
 
@@ -82,14 +76,14 @@ public class FriendDaoImpl implements FriendDao {
     public void changeStatusOnConfirmed(Long id, Long friendId) {
         jdbcTemplate.update(
             "UPDATE friends SET confirmed = ? WHERE user_id = ? and friend_id = ?", true, id, friendId);
-        log.info("Статус обновлен {}", id);
+        log.info("Статус обновлен на подтвержден {}", id);
     }
 
     @Override
     public void changeStatusOnDelete(Long id, Long friendId) {
         jdbcTemplate.update(
             "UPDATE friends SET confirmed = ? WHERE user_id = ? and friend_id = ?", false, id, friendId);
-        log.info("Статус обновлен {}", id);
+        log.info("Статус обновлен на удаление {}", id);
 
     }
 
@@ -102,4 +96,5 @@ public class FriendDaoImpl implements FriendDao {
             return false;
         }
     }
+
 }
