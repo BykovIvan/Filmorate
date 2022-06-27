@@ -11,7 +11,10 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.FilmGenreDao;
 import ru.yandex.practicum.filmorate.dao.GenreDao;
 import ru.yandex.practicum.filmorate.dao.MpaDao;
-import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.model.film.Film;
+import ru.yandex.practicum.filmorate.model.film.FilmGenre;
+import ru.yandex.practicum.filmorate.model.film.Genre;
+import ru.yandex.practicum.filmorate.model.film.Mpa;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.sql.Date;

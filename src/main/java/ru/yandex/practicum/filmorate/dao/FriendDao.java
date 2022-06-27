@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.dao;
 
 
-import ru.yandex.practicum.filmorate.model.Friend;
+import ru.yandex.practicum.filmorate.model.user.Friend;
 
 import java.util.List;
 

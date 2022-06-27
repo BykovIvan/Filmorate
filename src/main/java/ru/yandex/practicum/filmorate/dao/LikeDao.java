@@ -1,10 +1,5 @@
 package ru.yandex.practicum.filmorate.dao;
 
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Like;
-
-import java.util.List;
-
 public interface LikeDao {
     void addLike(Long filmId, Long userId);
     void deleteLike(Long filmId, Long userId);
