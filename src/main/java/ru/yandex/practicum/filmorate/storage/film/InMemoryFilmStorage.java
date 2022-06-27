@@ -56,11 +56,6 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void deleteAllFilms() {
-        mapFilms.clear();
-    }
-
-    @Override
     public boolean containsFilmById(Long idFilm) {
         return mapFilms.containsKey(idFilm);
     }

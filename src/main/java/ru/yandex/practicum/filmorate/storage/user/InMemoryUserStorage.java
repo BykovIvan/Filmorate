@@ -57,11 +57,6 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void deleteAllUser() {
-        mapUsers.clear();
-    }
-
-    @Override
     public boolean containsUserById(Long idUser) {
         return mapUsers.containsKey(idUser);
     }

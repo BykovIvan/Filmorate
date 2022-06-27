@@ -104,10 +104,6 @@ public class UserDbStorage implements UserStorage {
         return jdbcTemplate.update(sql, args) == 1;
     }
 
-    @Override
-    public void deleteAllUser() {
-
-    }
 
     @Override
     public boolean containsUserById(Long idUser) {

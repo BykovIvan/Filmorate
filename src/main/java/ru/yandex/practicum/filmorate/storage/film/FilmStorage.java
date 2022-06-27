@@ -52,12 +52,6 @@ public interface FilmStorage {
     boolean deleteFilmById(Long idFilm);
 
     /**
-     * Удаление всех фильмов
-     * Delete all movies
-     */
-    void deleteAllFilms();
-
-    /**
      * Проверка содержиться ли фильм по его ID
      * Checking if the movie is contained by his ID
      *

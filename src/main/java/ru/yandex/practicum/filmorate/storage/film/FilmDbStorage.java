@@ -18,9 +18,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 @Repository
@@ -81,7 +79,6 @@ public class FilmDbStorage implements FilmStorage {
                                 film.getMpa().getId(),
                                 film.getId());
 
-
         if (film.getGenres() == null){
             List<Genre> listOfGenre = getFilmById(film.getId()).get().getGenres();
             if (listOfGenre != null){
@@ -89,29 +86,49 @@ public class FilmDbStorage implements FilmStorage {
                     filmGenreDao.deleteGenre(film.getId(), genre.getId());
                 }
             }
-        }else if (film.getGenres().isEmpty()){
+            log.info("Обновлен фильм {} {}", film.getId(), film.getName());
+            return Optional.of(film);
+
+        } else if (film.getGenres().isEmpty()){
             List<Genre> listOfGenre = getFilmById(film.getId()).get().getGenres();
             if (listOfGenre != null){
                 for (Genre genre : listOfGenre) {
                     filmGenreDao.deleteGenre(film.getId(), genre.getId());
                 }
             }
-        }else {
-            List<Genre> listOfGenre = getFilmById(film.getId()).get().getGenres();
-            List<Genre> newListOfGenre = film.getGenres();
+            film.setGenres(new ArrayList<>());
+            log.info("Обновлен фильм {} {}", film.getId(), film.getName());
+            return Optional.of(film);
+        } else {
+            List<Genre> listOfGenre = getFilmById(film.getId()).get().getGenres();//из таблицы
+            List<Genre> newListOfGenre = film.getGenres();                         //с объекта
             if (listOfGenre != null){
                 for (Genre genre : listOfGenre) {
-                    filmGenreDao.deleteGenre(film.getId(), genre.getId());
+                    if (filmGenreDao.containsGenreById(film.getId(), genre.getId())){
+                        filmGenreDao.deleteGenre(film.getId(), genre.getId());
+                    }
                 }
-            }else {
                 for (Genre genre : newListOfGenre) {
-                    if (genre.getId() != )
-                    filmGenreDao.addGenre(film.getId(), genre.getId());
+                    if (!filmGenreDao.containsGenreById(film.getId(), genre.getId())){
+                        filmGenreDao.addGenre(film.getId(), genre.getId());
+                    } else {
+                        log.info("Такой жанр уже добавлен: {}", genre.getId());
+                    }
+                }
+            } else {
+                for (Genre genre : newListOfGenre) {
+                    if (!filmGenreDao.containsGenreById(film.getId(), genre.getId())){
+                        filmGenreDao.addGenre(film.getId(), genre.getId());
+                    } else {
+                        log.info("Такой жанр уже добавлен: {}", genre.getId());
+                    }
+
                 }
             }
+            log.info("Обновлен фильм {} {}", film.getId(), film.getName());
+            return getFilmById(film.getId());
         }
-        log.info("Обновлен фильм {} {}", film.getId(), film.getName());
-        return Optional.of(film);
+
     }
 
     @Override
@@ -131,17 +148,19 @@ public class FilmDbStorage implements FilmStorage {
                             .name(mpaDao.findMpaById(filmRows.getLong("mpa")).get().getName())
                             .build())
                     .build();
+
             if (!filmGenreDao.findGenresByFilms(idFilm).isEmpty()){
                 List<FilmGenre> listOfGenre = filmGenreDao.findGenresByFilms(idFilm);
                 List<Genre> genres = new ArrayList<>();
                 for (FilmGenre filmGenre : listOfGenre) {
-//                    genres.add(new Genre(filmGenre.getGenreId(), genreDao.findGenreById(filmGenre.getGenreId()).get().getName()));
                     genres.add(Genre.builder()
                                     .id(filmGenre.getGenreId())
                                     .name(genreDao.findGenreById(filmGenre.getGenreId()).get().getName())
                                     .build());
                 }
                 film.setGenres(genres);
+            } else {
+                film.setGenres(null);
             }
             return Optional.of(film);
         } else {
@@ -155,7 +174,6 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "SELECT * FROM films";
         log.info("Запрос на получение всех фильмов.");
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs));
-
     }
 
     private Film makeFilm(ResultSet rs) throws SQLException {
@@ -163,7 +181,6 @@ public class FilmDbStorage implements FilmStorage {
         if (filmGenreDao.findGenresByFilms(rs.getLong("id")) != null){
             List<FilmGenre> listOfGenre = filmGenreDao.findGenresByFilms(rs.getLong("id"));
             for (FilmGenre filmGenre : listOfGenre) {
-//                genres.add(new Genre(filmGenre.getGenreId(), genreDao.findGenreById(filmGenre.getGenreId()).get().getName()));
                 genres.add(Genre.builder()
                         .id(filmGenre.getGenreId())
                         .name(genreDao.findGenreById(filmGenre.getGenreId()).get().getName())
@@ -183,7 +200,6 @@ public class FilmDbStorage implements FilmStorage {
                         .build())
                 .genres(genres)
                 .build();
-
     }
 
     @Override
@@ -208,11 +224,6 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "DELETE FROM films WHERE id = ?";
         Object[] args = new Object[] {idFilm};
         return jdbcTemplate.update(sql, args) == 1;
-    }
-
-    @Override
-    public void deleteAllFilms() {
-
     }
 
     @Override

@@ -55,15 +55,7 @@ public interface UserStorage {
      * Удаление всех пользователей
      * Delete all users
      */
-    void deleteAllUser();
 
-    /**
-     * Проверка содержиться ли пользователь по его ID
-     * Checking if the user is contained by his ID
-     *
-     * @param idUser
-     * @return
-     */
     boolean containsUserById(Long idUser);
 
 }
