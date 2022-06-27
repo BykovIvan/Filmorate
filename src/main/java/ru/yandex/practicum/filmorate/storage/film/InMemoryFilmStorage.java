@@ -65,5 +65,15 @@ public class InMemoryFilmStorage implements FilmStorage {
         return mapFilms.containsKey(idFilm);
     }
 
+    @Override
+    public void updateDownRateOfFilms(Long idFilm) {
+
+    }
+
+    @Override
+    public void updateUpRateOfFilms(Long idFilm) {
+
+    }
+
 
 }

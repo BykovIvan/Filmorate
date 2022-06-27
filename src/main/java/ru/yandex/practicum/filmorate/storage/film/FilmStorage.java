@@ -65,4 +65,7 @@ public interface FilmStorage {
      * @return
      */
     boolean containsFilmById(Long idFilm);
+
+    void updateDownRateOfFilms(Long idFilm);
+    void updateUpRateOfFilms(Long idFilm);
 }

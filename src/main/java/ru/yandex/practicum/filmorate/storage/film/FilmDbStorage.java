@@ -18,6 +18,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,7 +43,8 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Optional<Film> create(Film film) {
-        String insertSql = "INSERT INTO films (name, release_data, description, duration, rate, mpa) VALUES (?,?,?,?,?,?)";
+        String insertSql = "INSERT INTO films (name, release_data, description, duration, rate, mpa)" +
+                " VALUES (?,?,?,?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(insertSql, new String[] { "ID" });
@@ -52,27 +54,63 @@ public class FilmDbStorage implements FilmStorage {
             ps.setInt(4, film.getDuration());
             ps.setLong(5, film.getRate());
             ps.setLong(6, film.getMpa().getId());
-            //Вставить создание списка с жанрами
-
             return ps;
         }, keyHolder);
-        film.setId(keyHolder.getKey().longValue());
+        Long getIdFilm = keyHolder.getKey().longValue();
+        film.setId(getIdFilm);
         log.info("Фильм создан: {} {}", film.getId(), film.getName());
+
+        if (film.getGenres() != null){
+            List<Genre> listOfGenre = film.getGenres();
+            for (Genre genre : listOfGenre) {
+                filmGenreDao.addGenre(getIdFilm, genre.getId());
+            }
+        }
         return Optional.of(film);
     }
 
     @Override
     public Optional<Film> update(Film film) {
         jdbcTemplate.update(
-"UPDATE films SET name = ?, release_data = ?, description = ?, duration = ?, rate = ?, mpa = ?" +
-       "WHERE id = ? ", film.getName(),
+        "UPDATE films SET name = ?, release_data = ?, description = ?, duration = ?, rate = ?, mpa = ?" +
+            "WHERE id = ? ", film.getName(),
                                 Date.valueOf(film.getReleaseDate()),
                                 film.getDescription(),
                                 film.getDuration(),
                                 film.getRate(),
                                 film.getMpa().getId(),
                                 film.getId());
-        log.info("Обнавлен фильм {} {}", film.getId(), film.getName());
+
+
+        if (film.getGenres() == null){
+            List<Genre> listOfGenre = getFilmById(film.getId()).get().getGenres();
+            if (listOfGenre != null){
+                for (Genre genre : listOfGenre) {
+                    filmGenreDao.deleteGenre(film.getId(), genre.getId());
+                }
+            }
+        }else if (film.getGenres().isEmpty()){
+            List<Genre> listOfGenre = getFilmById(film.getId()).get().getGenres();
+            if (listOfGenre != null){
+                for (Genre genre : listOfGenre) {
+                    filmGenreDao.deleteGenre(film.getId(), genre.getId());
+                }
+            }
+        }else {
+            List<Genre> listOfGenre = getFilmById(film.getId()).get().getGenres();
+            List<Genre> newListOfGenre = film.getGenres();
+            if (listOfGenre != null){
+                for (Genre genre : listOfGenre) {
+                    filmGenreDao.deleteGenre(film.getId(), genre.getId());
+                }
+            }else {
+                for (Genre genre : newListOfGenre) {
+                    if (genre.getId() != )
+                    filmGenreDao.addGenre(film.getId(), genre.getId());
+                }
+            }
+        }
+        log.info("Обновлен фильм {} {}", film.getId(), film.getName());
         return Optional.of(film);
     }
 
@@ -93,6 +131,18 @@ public class FilmDbStorage implements FilmStorage {
                             .name(mpaDao.findMpaById(filmRows.getLong("mpa")).get().getName())
                             .build())
                     .build();
+            if (!filmGenreDao.findGenresByFilms(idFilm).isEmpty()){
+                List<FilmGenre> listOfGenre = filmGenreDao.findGenresByFilms(idFilm);
+                List<Genre> genres = new ArrayList<>();
+                for (FilmGenre filmGenre : listOfGenre) {
+//                    genres.add(new Genre(filmGenre.getGenreId(), genreDao.findGenreById(filmGenre.getGenreId()).get().getName()));
+                    genres.add(Genre.builder()
+                                    .id(filmGenre.getGenreId())
+                                    .name(genreDao.findGenreById(filmGenre.getGenreId()).get().getName())
+                                    .build());
+                }
+                film.setGenres(genres);
+            }
             return Optional.of(film);
         } else {
             log.info("Фильм с идентификатором {} не найден.", idFilm);
@@ -109,6 +159,17 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Film makeFilm(ResultSet rs) throws SQLException {
+        List<Genre> genres = new ArrayList<>();
+        if (filmGenreDao.findGenresByFilms(rs.getLong("id")) != null){
+            List<FilmGenre> listOfGenre = filmGenreDao.findGenresByFilms(rs.getLong("id"));
+            for (FilmGenre filmGenre : listOfGenre) {
+//                genres.add(new Genre(filmGenre.getGenreId(), genreDao.findGenreById(filmGenre.getGenreId()).get().getName()));
+                genres.add(Genre.builder()
+                        .id(filmGenre.getGenreId())
+                        .name(genreDao.findGenreById(filmGenre.getGenreId()).get().getName())
+                        .build());
+            }
+        }
         return Film.builder()
                 .id(rs.getLong("id"))
                 .name(rs.getString("name"))
@@ -120,11 +181,27 @@ public class FilmDbStorage implements FilmStorage {
                         .id(rs.getLong("mpa"))
                         .name(mpaDao.findMpaById(rs.getLong("mpa")).get().getName())
                         .build())
-//                .genres()
+                .genres(genres)
                 .build();
 
     }
 
+    @Override
+    public void updateDownRateOfFilms(Long idFilm) {
+        log.info("Рейтинг у фильма {} повышен.", idFilm);
+        String sql = "UPDATE films SET rate = rate + 1 WHERE id = ?";
+        Object[] args = new Object[] {idFilm};
+        jdbcTemplate.update(sql, args);
+
+    }
+
+    @Override
+    public void updateUpRateOfFilms(Long idFilm) {
+        log.info("Рейтинг у фильма {} повышен.", idFilm);
+        String sql = "UPDATE films SET rate = rate + 1 WHERE id = ?";
+        Object[] args = new Object[] {idFilm};
+        jdbcTemplate.update(sql, args);
+    }
     @Override
     public boolean deleteFilmById(Long idFilm) {
         log.info("Фильм с идентификатором {} удален.", idFilm);

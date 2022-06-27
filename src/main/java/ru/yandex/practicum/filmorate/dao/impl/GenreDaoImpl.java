@@ -29,6 +29,7 @@ public class GenreDaoImpl implements GenreDao {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet("select * from GENRE where id = ?", id);
         if(userRows.next()) {
             log.info("Найден GENRE: {}", id);
+//            Genre genre = new Genre(id, userRows.getString("name"));
             Genre genre = Genre.builder()
                     .id(id)
                     .name(userRows.getString("name"))
@@ -48,6 +49,7 @@ public class GenreDaoImpl implements GenreDao {
     }
 
     private Genre makeGenre(ResultSet rs) throws SQLException {
+//        return  new Genre(rs.getLong("id"), rs.getString("name"));
         return Genre.builder()
                 .id(rs.getLong("id"))
                 .name(rs.getString("name"))

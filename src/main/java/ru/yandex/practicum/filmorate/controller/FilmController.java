@@ -40,7 +40,9 @@ public class FilmController {
     public Optional<Film> create(@Valid @RequestBody Film film) {
         log.info("Получен запрос к эндпоинту /films. Метод POST");
         checkFilm(film, true);
-        return filmStorage.create(film);
+        Optional<Film> films = filmStorage.create(film);
+        System.out.println(films.get());
+        return films;
 
     }
 
@@ -58,7 +60,7 @@ public class FilmController {
         if (film.getId() > 0) {
             return filmStorage.update(film);
         } else {
-            throw new NotFoundObjectException("Такой фильм не добавлен или id отрицательный");
+            throw new NotFoundObjectException("id отрицательный");
         }
     }
 
@@ -87,6 +89,7 @@ public class FilmController {
         } else {
             throw new NotFoundObjectException("Нет такого фильма c ID " + idFilm);
         }
+
     }
 
     /**
