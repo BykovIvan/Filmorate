@@ -56,6 +56,11 @@ public class FilmDbStorage implements FilmStorage {
             ps.setInt(4, film.getDuration());
             ps.setLong(5, film.getRate());
             ps.setLong(6, film.getMpa().getId());
+
+
+
+
+
             return ps;
         }, keyHolder);
         Long getIdFilm = keyHolder.getKey().longValue();
@@ -84,12 +89,15 @@ public class FilmDbStorage implements FilmStorage {
                                 film.getId());
 
         if (film.getGenres() == null){
-            List<Genre> listOfGenre = getFilmById(film.getId()).get().getGenres();
-            if (listOfGenre != null){
-                for (Genre genre : listOfGenre) {
-                    filmGenreDao.deleteGenre(film.getId(), genre.getId());
+            if (genreDao.containsGenreById(film.getId())){
+                List<Genre> listOfGenre = getFilmById(film.getId()).get().getGenres();
+                if (listOfGenre != null){
+                    for (Genre genre : listOfGenre) {
+                        filmGenreDao.deleteGenre(film.getId(), genre.getId());
+                    }
                 }
             }
+
             log.info("Обновлен фильм {} {}", film.getId(), film.getName());
             return Optional.of(film);
 
