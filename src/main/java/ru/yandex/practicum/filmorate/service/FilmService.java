@@ -45,10 +45,7 @@ public class FilmService {
             if (userStorage.containsUserById(idUser)){
                 if (!likeDao.containsLikeById(idFilm, idUser)){
                     likeDao.addLike(idFilm, idUser);
-                    //Необходим uppdate rate В таблице films и в делит тоже
                     filmStorage.updateUpRateOfFilms(idFilm);
-//                    filmStorage.getFilmById(idFilm).get().setRate(likeDao.findCountLikesByIdFilm(idFilm));
-//                    filmStorage.getFilmById(idFilm).get().setRate(filmStorage.getFilmById(idFilm).get().getRate() + 1);
                 }else {
                     throw new NotFoundObjectException("Такой пользователь уже ставил лайк данному фильму");
                 }
@@ -58,24 +55,6 @@ public class FilmService {
         }else {
             throw new NotFoundObjectException("Такого фильма не существуе "+ idFilm);
         }
-
-//        if (filmStorage.containsFilmById(idFilm)) {
-//            if (filmStorage.getFilmById(idFilm).get().getLikesFromUsers() == null) {
-//                Set<Long> setForLikes = new HashSet<>();
-//                setForLikes.add(idUser);
-//                filmStorage.getFilmById(idFilm).get().setLikesFromUsers(setForLikes);
-//                filmStorage.getFilmById(idFilm).get().setRate(filmStorage.getFilmById(idFilm).get().getRate() + 1);
-//            } else if (!(filmStorage.getFilmById(idFilm).get().getLikesFromUsers().contains(idUser))) {
-//                filmStorage.getFilmById(idFilm).get().getLikesFromUsers().add(idUser);
-//                filmStorage.getFilmById(idFilm).get().setRate(filmStorage.getFilmById(idFilm).get().getRate() + 1);
-//            } else {
-//                throw new NotFoundObjectException("Такой пользователь уже ставил лайк данному фильму");
-//            }
-//            return filmStorage.getFilmById(idFilm);
-//        } else {
-//            throw new NotFoundObjectException("Такого фильма не существует");
-//        }
-
     }
 
     /**
@@ -92,8 +71,6 @@ public class FilmService {
                 if (likeDao.containsLikeById(idFilm, idUser)) {
                     likeDao.deleteLike(idFilm, idUser);
                     filmStorage.updateDownRateOfFilms(idFilm);
-//                    filmStorage.getFilmById(idFilm).get().setRate(likeDao.findCountLikesByIdFilm(idFilm));
-//                    filmStorage.getFilmById(idFilm).get().setRate(filmStorage.getFilmById(idFilm).get().getRate() - 1);
                 } else {
                     throw new NotFoundObjectException("Пользователь уже удалил лайк у данного фильма");
                 }
@@ -104,21 +81,6 @@ public class FilmService {
             throw new NotFoundObjectException("Такого фильма не существуе " + idFilm);
         }
     }
-//        if (filmStorage.containsFilmById(idFilm)) {
-//            if (filmStorage.getFilmById(idFilm).get().getLikesFromUsers() != null &&
-//                    filmStorage.getFilmById(idFilm).get().getLikesFromUsers().contains(idUser)) {
-//
-//                filmStorage.getFilmById(idFilm).get().getLikesFromUsers().remove(idUser);
-//                filmStorage.getFilmById(idFilm).get().setRate(filmStorage.getFilmById(idFilm).get().getRate() - 1);
-//
-//                return filmStorage.getFilmById(idFilm);
-//            } else {
-//                throw new NotFoundObjectException("Список лайков пуст!");
-//            }
-//        } else {
-//            throw new NotFoundObjectException("Такого фильма не существует!");
-//        }
-//    }
 
     /**
      * Получение фильмов по его популярности
@@ -128,21 +90,6 @@ public class FilmService {
      * @return
      */
     public List<Film> getFilmsByRating(Long count) {
-//        List<Film> listOfFilms = new ArrayList<>();
-//        if (count == null) {
-//            List<Like> likesById = likeDao.find10BestRateFilms(10L);
-//            for (Like like : likesById) {
-//                listOfFilms.add(filmStorage.getFilmById(like.getFilmId()).get());
-//            }
-//        }else {
-//            List<Like> likesById = likeDao.find10BestRateFilms(count);
-//            for (Like like : likesById) {
-//                listOfFilms.add(filmStorage.getFilmById(like.getFilmId()).get());
-//            }
-//        }
-//        return listOfFilms;
-
-
         List<Film> list = filmStorage.getAllFilms();
         if (count == null) {
             return list.stream()

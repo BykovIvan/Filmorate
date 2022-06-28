@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.user;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -24,7 +25,7 @@ public class UserDbStorage implements UserStorage {
     private final Logger log = LoggerFactory.getLogger(UserDbStorage.class);
 
     private final JdbcTemplate jdbcTemplate;
-
+    @Autowired
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -100,7 +101,6 @@ public class UserDbStorage implements UserStorage {
         Object[] args = new Object[] {idUser};
         return jdbcTemplate.update(sql, args) == 1;
     }
-
 
     @Override
     public boolean containsUserById(Long idUser) {

@@ -5,5 +5,4 @@ public interface LikeDao {
     void deleteLike(Long filmId, Long userId);
     Long findCountLikesByIdFilm(Long filmId);
     boolean containsLikeById(Long filmId, Long userId);
-//    List<Like> find10BestRateFilms(Long count);
 }

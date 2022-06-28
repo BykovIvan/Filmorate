@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.dao.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -19,7 +20,7 @@ import java.util.Optional;
 public class GenreDaoImpl implements GenreDao {
     private final Logger log = LoggerFactory.getLogger(MpaDaoImpl.class);
     private final JdbcTemplate jdbcTemplate;
-
+    @Autowired
     public GenreDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -29,7 +30,6 @@ public class GenreDaoImpl implements GenreDao {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet("select * from GENRE where id = ?", id);
         if(userRows.next()) {
             log.info("Найден GENRE: {}", id);
-//            Genre genre = new Genre(id, userRows.getString("name"));
             Genre genre = Genre.builder()
                     .id(id)
                     .name(userRows.getString("name"))
@@ -49,7 +49,6 @@ public class GenreDaoImpl implements GenreDao {
     }
 
     private Genre makeGenre(ResultSet rs) throws SQLException {
-//        return  new Genre(rs.getLong("id"), rs.getString("name"));
         return Genre.builder()
                 .id(rs.getLong("id"))
                 .name(rs.getString("name"))

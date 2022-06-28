@@ -52,8 +52,8 @@ public interface UserStorage {
     boolean deleteUserById(Long idUser);
 
     /**
-     * Удаление всех пользователей
-     * Delete all users
+     * Провека есть ли в базе пользователь
+     * Check user in db
      */
 
     boolean containsUserById(Long idUser);

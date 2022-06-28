@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -34,7 +35,7 @@ public class FilmDbStorage implements FilmStorage {
     private final GenreDao genreDao;
     private final FilmGenreDao filmGenreDao;
 
-
+    @Autowired
     public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaDao mpaDao, GenreDao genreDao, FilmGenreDao filmGenreDao) {
         this.jdbcTemplate = jdbcTemplate;
         this.mpaDao = mpaDao;

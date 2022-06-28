@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.dao.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,7 @@ public class FriendDaoImpl implements FriendDao {
 
     private final Logger log = LoggerFactory.getLogger(MpaDaoImpl.class);
     private final JdbcTemplate jdbcTemplate;
-
+    @Autowired
     public FriendDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }

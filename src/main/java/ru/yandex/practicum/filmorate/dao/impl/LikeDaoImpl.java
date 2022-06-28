@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.dao.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -14,7 +15,7 @@ public class LikeDaoImpl implements LikeDao {
 
     private final Logger log = LoggerFactory.getLogger(MpaDaoImpl.class);
     private final JdbcTemplate jdbcTemplate;
-
+    @Autowired
     public LikeDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -59,21 +60,4 @@ public class LikeDaoImpl implements LikeDao {
             return false;
         }
     }
-
-//    @Override
-//    public List<Like> find10BestRateFilms(Long count) {
-//        String sql = "SELECT film_id, " +
-//                "COUNT(USER_ID) AS COUNT " +
-//                "from LIKES " +
-//                "GROUP BY film_id " +
-//                "ORDER BY COUNT(USER_ID) DESC " +
-//                "LIMIT " + count;
-//        log.info("Запрос на получение всех популярных фильмов.");
-//        return jdbcTemplate.query(sql, (rs, rowNum) -> makeLike(rs));
-//    }
-//    private Like makeLike(ResultSet rs) throws SQLException {
-//        return Like.builder()
-//                .filmId(rs.getLong("film_id"))
-//                .build();
-//    }
 }
