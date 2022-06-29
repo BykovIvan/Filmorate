@@ -1,8 +1,9 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.user.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserStorage {
     /**
@@ -12,7 +13,8 @@ public interface UserStorage {
      * @param user
      * @return
      */
-    User create(Long idUser, User user);
+//    User create(Long idUser, User user);
+    Optional<User> create(User user);
 
     /**
      * Обновление пользователя в локальном хранилище
@@ -21,7 +23,7 @@ public interface UserStorage {
      * @param user
      * @return
      */
-    User update(Long idUser, User user);
+    Optional<User> update(User user);
 
     /**
      * Поиск пользователей по Id
@@ -30,7 +32,7 @@ public interface UserStorage {
      * @param idUser
      * @return
      */
-    User getUserById(Long idUser);
+    Optional<User> getUserById(Long idUser);
 
     /**
      * Получение всех пользователей из хранилища
@@ -50,18 +52,10 @@ public interface UserStorage {
     boolean deleteUserById(Long idUser);
 
     /**
-     * Удаление всех пользователей
-     * Delete all users
+     * Провека есть ли в базе пользователь
+     * Check user in db
      */
-    void deleteAllUser();
 
-    /**
-     * Проверка содержиться ли пользователь по его ID
-     * Checking if the user is contained by his ID
-     *
-     * @param idUser
-     * @return
-     */
     boolean containsUserById(Long idUser);
 
 }

@@ -4,13 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundObjectException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.user.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -19,8 +20,6 @@ public class UserController {
 
     private final UserService userService;
     private final UserStorage userStorage;
-
-    private Long count = 1L;        //Счетчик для Id
 
     public UserController(UserService userService, UserStorage userStorage) {
         this.userService = userService;
@@ -35,15 +34,11 @@ public class UserController {
      * @return
      */
     @PostMapping
-    public User create(@Valid @RequestBody User user) {
+    public Optional<User> create(@Valid @RequestBody User user) {
         log.info("Получен запрос к эндпоинту /users. Метод POST");
         checkUser(user, true);
-        if (userStorage.create(count, user) != null) {
-            user.setId(count);
-            return userStorage.getUserById(count++);
-        } else {
-            throw new ValidationException("Такой пользователь уже существует");
-        }
+        return userStorage.create(user);
+
     }
 
     /**
@@ -54,11 +49,11 @@ public class UserController {
      * @return
      */
     @PutMapping
-    public User update(@Valid @RequestBody User user) {
+    public Optional<User> update(@Valid @RequestBody User user) {
         log.info("Получен запрос к эндпоинту /users. Метод PUT");
         checkUser(user, false);
-        if (userStorage.update(user.getId(), user) != null && user.getId() > 0) {
-            return userStorage.getUserById(user.getId());
+        if (user.getId() > 0) {
+            return userStorage.update(user);
         } else {
             throw new NotFoundObjectException("Такого пользователя не существует");
         }
@@ -83,7 +78,7 @@ public class UserController {
      * @return
      */
     @GetMapping("/{id}")
-    public User userById(@Valid @PathVariable("id") Long idUser) {
+    public Optional<User> userById(@Valid @PathVariable("id") Long idUser) {
         if (userStorage.containsUserById(idUser)) {
             return userStorage.getUserById(idUser);
         } else {
@@ -101,9 +96,10 @@ public class UserController {
      * @return
      */
     @PutMapping("/{id}/friends/{friendId}")
-    public User addFriend(@Valid @PathVariable("id") Long idUser, @PathVariable("friendId") Long idFriend) {
-        log.info("Получен запрос к эндпоинту /users. Метод PUT");
-        return userService.addFriend(idUser, idFriend);
+    public void addFriend(@Valid @PathVariable("id") Long idUser, @PathVariable("friendId") Long idFriend) {
+        log.info("Получен запрос к эндпоинту добавления в друзья /users. Метод PUT");
+        userService.addFriend(idUser, idFriend);
+//        return userService.addFriend(idUser, idFriend);
     }
 
     /**
@@ -116,8 +112,9 @@ public class UserController {
      * @return
      */
     @DeleteMapping("/{id}/friends/{friendId}")
-    public User deleteFriend(@Valid @PathVariable("id") Long idUser, @PathVariable("friendId") Long idFriend) {
-        return userService.deleteFriend(idUser, idFriend);
+    public void deleteFriend(@Valid @PathVariable("id") Long idUser, @PathVariable("friendId") Long idFriend) {
+        userService.deleteFriend(idUser, idFriend);
+//        return userService.deleteFriend(idUser, idFriend);
     }
 
     /**

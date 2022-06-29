@@ -1,9 +1,9 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.film.Film;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FilmStorage {
     /**
@@ -13,7 +13,7 @@ public interface FilmStorage {
      * @param film
      * @return
      */
-    Film create(Long idFilm, Film film);
+    Optional<Film> create(Film film);
 
     /**
      * Обновление фильма в локальном хранилище
@@ -22,7 +22,7 @@ public interface FilmStorage {
      * @param film
      * @return
      */
-    Film update(Long idFilm, Film film);
+    Optional<Film> update(Film film);
 
     /**
      * Поиск фильма по Id
@@ -31,7 +31,7 @@ public interface FilmStorage {
      * @param idFilm
      * @return
      */
-    Film getFilmById(Long idFilm);
+    Optional<Film> getFilmById(Long idFilm);
 
     /**
      * Получение всех фильмов из хранилища
@@ -51,12 +51,6 @@ public interface FilmStorage {
     boolean deleteFilmById(Long idFilm);
 
     /**
-     * Удаление всех фильмов
-     * Delete all movies
-     */
-    void deleteAllFilms();
-
-    /**
      * Проверка содержиться ли фильм по его ID
      * Checking if the movie is contained by his ID
      *
@@ -64,4 +58,7 @@ public interface FilmStorage {
      * @return
      */
     boolean containsFilmById(Long idFilm);
+
+    void updateDownRateOfFilms(Long idFilm);
+    void updateUpRateOfFilms(Long idFilm);
 }
